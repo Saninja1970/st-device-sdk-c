@@ -95,6 +95,7 @@ iot_error_t iot_easysetup_create_ssid(struct iot_devconf_prov_data *devconf, cha
 	if (devconf->ssid_version == 4) {
 		snprintf(ssid_build, sizeof(ssid_build), "%s_E4%4s%3s%1d%4s%4s",
 				 devconf->device_onboarding_id, devconf->mnid, devconf->setupid, setup_type, hashed_sn, last_sn);
+		IOT_INFO("ssid_build: %s", ssid_build);
 	} else if (devconf->ssid_version == 5) {
 		snprintf(ssid_build, sizeof(ssid_build), "%s_E5%4s%3s%4s%4s",
 				 devconf->device_onboarding_id, devconf->mnid, devconf->setupid, hashed_sn, last_sn);
@@ -104,6 +105,7 @@ iot_error_t iot_easysetup_create_ssid(struct iot_devconf_prov_data *devconf, cha
 	}
 
 	memcpy(ssid, ssid_build, ssid_len < strlen(ssid_build) ? ssid_len : strlen(ssid_build));
+	IOT_INFO("ssid: %s", ssid);
 out:
 	if (err && devconf->hashed_sn) {
 		iot_os_free(devconf->hashed_sn);
