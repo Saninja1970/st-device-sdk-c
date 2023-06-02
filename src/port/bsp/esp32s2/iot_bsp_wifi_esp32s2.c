@@ -424,10 +424,17 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 	case IOT_WIFI_MODE_SOFTAP:
 
 		str_len = strlen(conf->ssid);
+		
+		IOT_INFO("Conf -> ssid: %s  , str_len: %d" , conf->ssid , str_len);
+		
 		memcpy(wifi_config.ap.ssid, conf->ssid, (str_len > IOT_WIFI_MAX_SSID_LEN) ? IOT_WIFI_MAX_SSID_LEN : str_len);
+			
+		IOT_INFO("wifi_config.ap.ssid: %s" , wifi_config.ap.ssid);
 
 		str_len =  strlen(conf->pass);
 		memcpy(wifi_config.ap.password, conf->pass, (str_len > IOT_WIFI_MAX_PASS_LEN) ? IOT_WIFI_MAX_PASS_LEN : str_len);
+		
+		IOT_INFO("wifi_config.ap.password: %s" , wifi_config.ap.password);
 
 		wifi_config.ap.ssid_len = strlen(conf->ssid);
 		wifi_config.ap.max_connection = 1;
@@ -441,9 +448,12 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 		else{
 			wifi_config.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
 		}
-		ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
-		ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
-		ESP_ERROR_CHECK(esp_wifi_start());
+		//ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
+		//ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
+		//ESP_ERROR_CHECK(esp_wifi_start());
+			
+		IOT_INFO("wifi_init_softap finished.SSID:%s password:%s",
+				wifi_config.ap.ssid, wifi_config.ap.password);
 
 		IOT_DEBUG("wifi_init_softap finished.SSID:%s password:%s",
 				wifi_config.ap.ssid, wifi_config.ap.password);
