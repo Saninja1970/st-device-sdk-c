@@ -1132,7 +1132,6 @@ IOT_CTX* st_conn_init(unsigned char *onboarding_config, unsigned int onboarding_
 		VER_MAJOR, VER_MINOR, VER_PATCH, VER_EXTRA_STR);
 #else
 	IOT_INFO("stdk_version : %s", STDK_VERSION_STRING);
-	IOT_INFO("bsdk");
 #endif
 
 	IOT_DUMP_MAIN(INFO, BASE, STDK_VERSION_CODE);
