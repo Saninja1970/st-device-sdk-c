@@ -901,6 +901,8 @@ static void _iot_main_task(struct iot_context *ctx)
 
 				IOT_DEBUG("cmd: %d\n", cmd.cmd_type);
 
+				IOT_INFO("cmd: %d\n", cmd.cmd_type);
+
 				err = _do_iot_main_command(ctx, &cmd);
 				if (cmd.param)
 					free(cmd.param);
