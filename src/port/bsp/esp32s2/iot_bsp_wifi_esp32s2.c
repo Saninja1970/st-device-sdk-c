@@ -426,12 +426,12 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 
 
 
-		str_len = strlen(wifi_config.sta.ssid);
+		//str_len = strlen(wifi_config.sta.ssid);
 		//if(str_len) {
 		//	memcpy(wifi_config.sta.ssid, conf->ssid, (str_len > IOT_WIFI_MAX_SSID_LEN) ? IOT_WIFI_MAX_SSID_LEN : str_len);
 		//}
 
-		str_len = strlen(wifi_config.sta.password);
+		//str_len = strlen(wifi_config.sta.password);
 		/*if(str_len) {
 			memcpy(wifi_config.sta.password, conf->pass, (str_len > IOT_WIFI_MAX_PASS_LEN) ? IOT_WIFI_MAX_PASS_LEN : str_len);
 		}*/
