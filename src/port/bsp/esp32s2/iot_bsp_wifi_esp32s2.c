@@ -322,7 +322,7 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 			ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
 			ESP_ERROR_CHECK(esp_wifi_start());
 			
-			IOT_INFO("wifi_config.sta.ssid: %s", wifi_config.sta.ssid);
+			//IOT_INFO("wifi_config.sta.ssid: %s", wifi_config.sta.ssid);
 
 			uxBits = xEventGroupWaitBits(wifi_event_group, WIFI_STA_START_BIT,
 			true, false, IOT_WIFI_CMD_TIMEOUT);
