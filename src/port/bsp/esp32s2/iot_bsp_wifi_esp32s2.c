@@ -33,7 +33,8 @@
 
 #include "lwip/apps/sntp.h"
 
-#define EXAMPLE_ESP_WIFI_SSID      Wokwi-GUEST
+#define EXAMPLE_ESP_WIFI_SSID      "Wokwi-GUEST"
+#define EXAMPLE_ESP_WIFI_PASS      ""
 #define EXAMPLE_ESP_MAXIMUM_RETRY  10
 
 const int WIFI_STA_START_BIT 		= BIT0;
@@ -418,8 +419,8 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 
 		 wifi_config_t wifi_config = {
         .sta = {
-            .ssid = EXAMPLE_ESP_WIFI_SSID
-			.bssid = 42:13:37:55:aa:01
+            .ssid = EXAMPLE_ESP_WIFI_SSID,
+			.password = EXAMPLE_ESP_WIFI_PASS
         	},
     	};
 
@@ -430,14 +431,14 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 		//	memcpy(wifi_config.sta.ssid, conf->ssid, (str_len > IOT_WIFI_MAX_SSID_LEN) ? IOT_WIFI_MAX_SSID_LEN : str_len);
 		//}
 
-		/*str_len = strlen(conf->pass);
-		if(str_len) {
+		str_len = strlen(wifi_config.sta.password);
+		/*if(str_len) {
 			memcpy(wifi_config.sta.password, conf->pass, (str_len > IOT_WIFI_MAX_PASS_LEN) ? IOT_WIFI_MAX_PASS_LEN : str_len);
 		}*/
 
-		str_len = strlen((char *)wifi_config.sta.bssid);
+		str_len = strlen((char *)conf->bssid);
 		if(str_len) {
-			//memcpy(wifi_config.sta.bssid, conf->bssid, IOT_WIFI_MAX_BSSID_LEN);
+			memcpy(wifi_config.sta.bssid, conf->bssid, IOT_WIFI_MAX_BSSID_LEN);
 			wifi_config.sta.bssid_set = true;
 
 			IOT_DEBUG("target mac=%2X:%2X:%2X:%2X:%2X:%2X",
