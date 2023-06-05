@@ -107,6 +107,8 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 	wifi_ap_record_t ap_info;
 	memset(&ap_info, 0x0, sizeof(wifi_ap_record_t));
 
+	IOT_INFO("Event triggered");
+
 	switch(event->event_id) {
 	case SYSTEM_EVENT_STA_START:
 		xEventGroupSetBits(wifi_event_group, WIFI_STA_START_BIT);
@@ -420,11 +422,16 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 		wifi_config_t wifi_config = {
         .sta = {
             .ssid = EXAMPLE_ESP_WIFI_SSID,
-            .password = EXAMPLE_ESP_WIFI_PASS
+            .password = EXAMPLE_ESP_WIFI_PASS,
+			.bssid = {0x42,0x13,0x37,0x55,0xaa,0x01}
         	},
     	};
 
-		str_len = strlen((char *)conf->bssid);
+		IOT_INFO("target mac=%2X:%2X:%2X:%2X:%2X:%2X",
+					wifi_config.sta.bssid[0], wifi_config.sta.bssid[1], wifi_config.sta.bssid[2],
+					wifi_config.sta.bssid[3], wifi_config.sta.bssid[4], wifi_config.sta.bssid[5]);
+
+		/*str_len = strlen((char *)conf->bssid);
 		if(str_len) {
 			memcpy(wifi_config.sta.bssid, conf->bssid, IOT_WIFI_MAX_BSSID_LEN);
 			wifi_config.sta.bssid_set = true;
@@ -432,21 +439,23 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 			IOT_DEBUG("target mac=%2X:%2X:%2X:%2X:%2X:%2X",
 					wifi_config.sta.bssid[0], wifi_config.sta.bssid[1], wifi_config.sta.bssid[2],
 					wifi_config.sta.bssid[3], wifi_config.sta.bssid[4], wifi_config.sta.bssid[5]);
-		}
+		}*/
 
-		if (conf->authmode == IOT_WIFI_AUTH_WPA3_PERSONAL) {
+		/*if (conf->authmode == IOT_WIFI_AUTH_WPA3_PERSONAL) {
 			wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA3_PSK;
 			// set PMF (Protected Management Frames) optional mode for better compatibility
 			wifi_config.sta.pmf_cfg.capable = true;
 			wifi_config.sta.pmf_cfg.required = false;
-		}
-		s_latest_disconnect_reason = IOT_ERROR_CONN_CONNECT_FAIL;
+		}*/
+		//s_latest_disconnect_reason = IOT_ERROR_CONN_CONNECT_FAIL;
 
 		ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
 		ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
 		ESP_ERROR_CHECK(esp_wifi_start());
 
 		IOT_INFO("connect to ap SSID:%s", wifi_config.sta.ssid);
+
+
 
 		uxBits = xEventGroupWaitBits(wifi_event_group, WIFI_STA_CONNECT_BIT,
 				true, false, IOT_WIFI_CMD_TIMEOUT);
