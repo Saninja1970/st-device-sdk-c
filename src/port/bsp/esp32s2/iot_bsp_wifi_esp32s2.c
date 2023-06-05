@@ -423,7 +423,9 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
         .sta = {
             .ssid = EXAMPLE_ESP_WIFI_SSID,
             .password = EXAMPLE_ESP_WIFI_PASS,
-			.bssid = {0x42,0x13,0x37,0x55,0xaa,0x01}
+			.bssid = {0x42,0x13,0x37,0x55,0xaa,0x01},
+			.threshold.authmode = WIFI_AUTH_WPA2_PSK,
+			.channel = 6
         	},
     	};
 
