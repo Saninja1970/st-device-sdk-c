@@ -107,7 +107,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 	wifi_ap_record_t ap_info;
 	memset(&ap_info, 0x0, sizeof(wifi_ap_record_t));
 
-	IOT_INFO("Event triggered");
+	IOT_INFO("Event triggered ; Event ID %d ",event->event_id);
 
 	switch(event->event_id) {
 	case SYSTEM_EVENT_STA_START:
