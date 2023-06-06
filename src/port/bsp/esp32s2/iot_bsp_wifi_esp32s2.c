@@ -443,7 +443,7 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 			memcpy(wifi_config.sta.password, conf->pass, (str_len > IOT_WIFI_MAX_PASS_LEN) ? IOT_WIFI_MAX_PASS_LEN : str_len);
 		}*/
 
-		wifi_config = {
+		wifi_config_t wifi_conf = {
         	.sta = {
            		.ssid = EXAMPLE_ESP_WIFI_SSID,
             	.password = EXAMPLE_ESP_WIFI_PASS,
@@ -454,8 +454,8 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
     	};
 
 		IOT_INFO("target mac=%2X:%2X:%2X:%2X:%2X:%2X",
-					wifi_config.sta.bssid[0], wifi_config.sta.bssid[1], wifi_config.sta.bssid[2],
-					wifi_config.sta.bssid[3], wifi_config.sta.bssid[4], wifi_config.sta.bssid[5]);
+					wifi_conf.sta.bssid[0], wifi_conf.sta.bssid[1], wifi_conf.sta.bssid[2],
+					wifi_conf.sta.bssid[3], wifi_conf.sta.bssid[4], wifi_conf.sta.bssid[5]);
 
 		/*str_len = strlen((char *)conf->bssid);
 		if(str_len) {
@@ -476,10 +476,10 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 		//s_latest_disconnect_reason = IOT_ERROR_CONN_CONNECT_FAIL;
 
 		ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-		ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
+		ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_conf));
 		ESP_ERROR_CHECK(esp_wifi_start());
 
-		IOT_INFO("connect to ap SSID:%s", wifi_config.sta.ssid);
+		IOT_INFO("connect to ap SSID:%s", wifi_conf.sta.ssid);
 
 
 
