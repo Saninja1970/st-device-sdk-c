@@ -391,7 +391,7 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 		}
 
 		/*AP connection is not allowed in WIFI_MODE_APSTA and WIFI_MODE_AP*/
-		if(mode == WIFI_MODE_AP || mode == WIFI_MODE_APSTA) {
+		if(mode == WIFI_MODE_AP || mode == WIFI_MODE_APSTA ) {
 			IOT_INFO("[esp32s2] current mode=%d need to call esp_wifi_stop", mode);
 			ESP_ERROR_CHECK(esp_wifi_stop());
 
@@ -409,6 +409,23 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 			}
 		}
 
+		if(mode == WIFI_MODE_STA ) {
+			IOT_INFO("[esp32s2] current mode=%d need to call esp_wifi_stop", mode);
+			ESP_ERROR_CHECK(esp_wifi_stop());
+
+			uxBits = xEventGroupWaitBits(wifi_event_group, WIFI_STA_DISCONNECT_BIT,
+					true, false, IOT_WIFI_CMD_TIMEOUT);
+
+			if(uxBits & WIFI_STA_DISCONNECT_BIT) {
+				IOT_INFO("STA Mode stopped");
+				IOT_DELAY(500);
+			}
+			else {
+				IOT_ERROR("WIFI_STA_DISCONNECT_BIT event Timeout");
+				IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_TIMEOUT, mode, __LINE__);
+				return IOT_ERROR_CONN_OPERATE_FAIL;
+			}
+		}
 		/*str_len = strlen(conf->ssid);
 		if(str_len) {
 			memcpy(wifi_config.sta.ssid, conf->ssid, (str_len > IOT_WIFI_MAX_SSID_LEN) ? IOT_WIFI_MAX_SSID_LEN : str_len);
@@ -461,6 +478,7 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 
 		uxBits = xEventGroupWaitBits(wifi_event_group, WIFI_STA_CONNECT_BIT,
 				true, false, IOT_WIFI_CMD_TIMEOUT);
+				
 		if((uxBits & WIFI_STA_CONNECT_BIT)) {
 			IOT_INFO("AP Connected");
 			IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_CONNECT_SUCCESS, 0, 0);
