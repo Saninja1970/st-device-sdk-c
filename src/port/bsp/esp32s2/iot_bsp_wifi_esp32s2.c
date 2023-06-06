@@ -418,7 +418,7 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 			IOT_INFO("[esp32s2] current mode=%d need to call esp_wifi_stop", mode);
 			ESP_ERROR_CHECK(esp_wifi_stop());
 
-			uxBits = xEventGroupWaitBits(wifi_event_group, WIFI_STA_DISCONNECT_BIT,true, false, IOT_WIFI_CMD_TIMEOUT);
+			/*uxBits = xEventGroupWaitBits(wifi_event_group, WIFI_STA_DISCONNECT_BIT,true, false, IOT_WIFI_CMD_TIMEOUT);
 
 			if(uxBits & WIFI_STA_DISCONNECT_BIT) {
 				IOT_INFO("STA Mode stopped");
@@ -428,7 +428,7 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 				IOT_ERROR("WIFI_STA_DISCONNECT_BIT event Timeout");
 				IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_TIMEOUT, mode, __LINE__);
 				return IOT_ERROR_CONN_OPERATE_FAIL;
-			}
+			}*/
 
 		}
 		/*str_len = strlen(conf->ssid);
