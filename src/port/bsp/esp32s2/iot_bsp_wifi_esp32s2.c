@@ -352,46 +352,94 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 
 	case IOT_WIFI_MODE_STATION:
 
-	str_len = strlen(conf->ssid);
-		memcpy(wifi_config.ap.ssid, conf->ssid, (str_len > IOT_WIFI_MAX_SSID_LEN) ? IOT_WIFI_MAX_SSID_LEN : str_len);
-
-		str_len =  strlen(conf->pass);
-		memcpy(wifi_config.ap.password, conf->pass, (str_len > IOT_WIFI_MAX_PASS_LEN) ? IOT_WIFI_MAX_PASS_LEN : str_len);
-
-		wifi_config.ap.ssid_len = strlen(conf->ssid);
-		wifi_config.ap.max_connection = 1;
-		wifi_config.ap.channel = IOT_SOFT_AP_CHANNEL;
-		wifi_config.ap.beacon_interval = 100;
-		wifi_config.ap.ssid_hidden = false;
-
-		if(strlen(conf->pass) == 0){
-			wifi_config.ap.authmode = WIFI_AUTH_OPEN;
+	/*esp_ret = esp_wifi_get_mode(&mode);
+		if(esp_ret != ESP_OK) {
+			IOT_ERROR("esp_wifi_get_mode failed err=[%d]", esp_ret);
+			IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_SETMODE_FAIL, conf->mode, esp_ret);
+			return IOT_ERROR_CONN_OPERATE_FAIL;
 		}
-		else{
-			wifi_config.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
+
+		//AP connection is not allowed in WIFI_MODE_APSTA and WIFI_MODE_AP
+		if(mode == WIFI_MODE_AP || mode == WIFI_MODE_APSTA) {
+			IOT_INFO("[esp32s2] current mode=%d need to call esp_wifi_stop", mode);
+			ESP_ERROR_CHECK(esp_wifi_stop());
+
+			uxBits = xEventGroupWaitBits(wifi_event_group, WIFI_AP_STOP_BIT,
+					true, false, IOT_WIFI_CMD_TIMEOUT);
+
+			if(uxBits & WIFI_AP_STOP_BIT) {
+				IOT_INFO("AP Mode stopped");
+				IOT_DELAY(500);
+			}
+			else {
+				IOT_ERROR("WIFI_AP_STOP_BIT event Timeout");
+				IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_TIMEOUT, mode, __LINE__);
+				return IOT_ERROR_CONN_OPERATE_FAIL;
+			}
 		}
-		ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
-		ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
+
+		str_len = strlen(conf->ssid);
+		if(str_len) {
+			memcpy(wifi_config.sta.ssid, conf->ssid, (str_len > IOT_WIFI_MAX_SSID_LEN) ? IOT_WIFI_MAX_SSID_LEN : str_len);
+		}
+
+		str_len = strlen(conf->pass);
+		if(str_len) {
+			memcpy(wifi_config.sta.password, conf->pass, (str_len > IOT_WIFI_MAX_PASS_LEN) ? IOT_WIFI_MAX_PASS_LEN : str_len);
+		}
+
+		str_len = strlen((char *)conf->bssid);
+		if(str_len) {
+			memcpy(wifi_config.sta.bssid, conf->bssid, IOT_WIFI_MAX_BSSID_LEN);
+			wifi_config.sta.bssid_set = true;
+
+			IOT_DEBUG("target mac=%2X:%2X:%2X:%2X:%2X:%2X",
+					wifi_config.sta.bssid[0], wifi_config.sta.bssid[1], wifi_config.sta.bssid[2],
+					wifi_config.sta.bssid[3], wifi_config.sta.bssid[4], wifi_config.sta.bssid[5]);
+		}
+
+		if (conf->authmode == IOT_WIFI_AUTH_WPA3_PERSONAL) {
+			wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA3_PSK;
+			// set PMF (Protected Management Frames) optional mode for better compatibility
+			wifi_config.sta.pmf_cfg.capable = true;
+			wifi_config.sta.pmf_cfg.required = false;
+		}
+		s_latest_disconnect_reason = IOT_ERROR_CONN_CONNECT_FAIL;
+
+		ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+		ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
 		ESP_ERROR_CHECK(esp_wifi_start());
 
-		IOT_DEBUG("wifi_init_softap finished.SSID:%s password:%s",
-				wifi_config.ap.ssid, wifi_config.ap.password);
+		IOT_INFO("connect to ap SSID:%s", wifi_config.sta.ssid);
 
-		uxBits=xEventGroupWaitBits(wifi_event_group, WIFI_AP_START_BIT,
+		uxBits = xEventGroupWaitBits(wifi_event_group, WIFI_STA_CONNECT_BIT,
 				true, false, IOT_WIFI_CMD_TIMEOUT);
-
-		if(uxBits & WIFI_AP_START_BIT) {
-			IOT_INFO("AP Mode Started");
+		if((uxBits & WIFI_STA_CONNECT_BIT)) {
+			IOT_INFO("AP Connected");
+			IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_CONNECT_SUCCESS, 0, 0);
 		}
 		else {
-				IOT_ERROR("WIFI_AP_START_BIT event Timeout");
-				IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_TIMEOUT, conf->mode, __LINE__);
-				return IOT_ERROR_CONN_SOFTAP_CONF_FAIL;
+			iot_error_t err = IOT_ERROR_CONN_CONNECT_FAIL;
+			if (s_latest_disconnect_reason != IOT_ERROR_CONN_CONNECT_FAIL) {
+				err = s_latest_disconnect_reason;
+			}
+
+			IOT_ERROR("WIFI_STA_CONNECT_BIT event Timeout %d", err);
+			IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_CONNECT_FAIL, IOT_WIFI_CMD_TIMEOUT, err);
+			return err;
 		}
 
-		break;
+		time(&now);
+		localtime_r(&now, &timeinfo);
 
-		
+		if (timeinfo.tm_year < (2016 - 1900)) {
+			IOT_INFO("Time is not set yet. Connecting to WiFi and getting time over NTP.");
+			_obtain_time();
+		}*/
+
+
+
+		break;
 
 	case IOT_WIFI_MODE_SOFTAP:
 
