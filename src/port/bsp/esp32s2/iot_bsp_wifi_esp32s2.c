@@ -125,7 +125,7 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 		IOT_INFO("Disconnect reason : %d", event->event_info.disconnected.reason);
 		IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_EVENT_DEAUTH, event->event_info.disconnected.reason, 0);
 		xEventGroupSetBits(wifi_event_group, WIFI_STA_DISCONNECT_BIT);
-		IOT_INFO("Disconnect bit set");
+		//IOT_INFO("Disconnect bit set");
 		switch (event->event_info.disconnected.reason)
 		{
 			case WIFI_REASON_NO_AP_FOUND:
@@ -140,12 +140,12 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 				break;
 		}
 		esp_wifi_connect();
-		IOT_INFO("AP connected");
+		//IOT_INFO("AP connected");
 		xEventGroupClearBits(wifi_event_group, WIFI_STA_CONNECT_BIT);
 
-		if(WIFI_STA_CONNECT_BIT){
+		/*if(WIFI_STA_CONNECT_BIT){
 			IOT_INFO("Connect bit set");
-		}
+		}*/
 		break;
 
 	case SYSTEM_EVENT_STA_GOT_IP:
