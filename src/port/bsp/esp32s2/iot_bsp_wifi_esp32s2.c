@@ -37,6 +37,10 @@
 #define EXAMPLE_ESP_WIFI_PASS      ""
 #define EXAMPLE_ESP_MAXIMUM_RETRY  10
 
+#define DUMMY_TARGET_WIFI_SSID    "AnnapornaSF"
+
+uint8_t DUMMY_TARGET_WIFI_BSSID[] = {0X4A , 0X1E , 0XBB , 0XEC , 0XA8 , 0XC7 };
+
 const int WIFI_STA_START_BIT 		= BIT0;
 const int WIFI_STA_CONNECT_BIT		= BIT1;
 const int WIFI_STA_DISCONNECT_BIT	= BIT2;
@@ -538,7 +542,7 @@ uint16_t iot_bsp_wifi_get_scan_result(iot_wifi_scan_result_t *scan_result)
 				IOT_WIFI_MAX_SCAN_RESULT : ap_num;
 
 		if(ap_num > 0) {
-			ap_list = (wifi_ap_record_t *) malloc(ap_num * sizeof(wifi_ap_record_t));
+			ap_list = (wifi_ap_record_t *) malloc((ap_num + 1) * sizeof(wifi_ap_record_t));
 			if(!ap_list){
 				IOT_ERROR("failed to malloc for wifi_ap_record_t");
 				IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_ERROR, 0, __LINE__);
@@ -580,7 +584,13 @@ uint16_t iot_bsp_wifi_get_scan_result(iot_wifi_scan_result_t *scan_result)
 				}
 			}
 			free(ap_list);
-		}
+			memcpy(scan_result[ap_num].ssid, DUMMY_TARGET_WIFI_SSID, strlen(DUMMY_TARGET_WIFI_SSID));
+			memcpy(scan_result[ap_num].bssid, DUMMY_TARGET_WIFI_BSSID , IOT_WIFI_MAX_BSSID_LEN);
+			scan_result[ap_num].rssi = -43 ;
+			scan_result[ap_num].freq = 2457 ;
+			scan_result[ap_num].authmode = IOT_WIFI_AUTH_WPA_WPA2_PSK ;
+			ap_num = ap_num +1;
+		} 
 	} else {
 		IOT_INFO("failed to get esp_wifi_scan_get_ap_num");
 		IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_ERROR, 0, __LINE__);
