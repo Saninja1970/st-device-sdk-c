@@ -142,8 +142,9 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 		esp_wifi_connect();
 		IOT_INFO("AP connected");
 		xEventGroupClearBits(wifi_event_group, WIFI_STA_CONNECT_BIT);
-		if(!WIFI_STA_CONNECT_BIT){
-		IOT_INFO("Connect bit set");
+
+		if(WIFI_STA_CONNECT_BIT){
+			IOT_INFO("Connect bit set");
 		}
 		break;
 
@@ -295,7 +296,7 @@ iot_error_t iot_bsp_wifi_init()
 iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 {
 	int str_len = 0;
-	wifi_config_t wifi_config;
+	wifi_config_t wifi_config = {0};
 	time_t now;
 	struct tm timeinfo;
 	wifi_mode_t mode = WIFI_MODE_NULL;
@@ -447,9 +448,9 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
         	.sta = {
            		.ssid = EXAMPLE_ESP_WIFI_SSID,
             	.password = EXAMPLE_ESP_WIFI_PASS,
-				.bssid = {0x42,0x13,0x37,0x55,0xaa,0x01},
-				.threshold.authmode = WIFI_AUTH_WPA2_PSK,
-				.channel = 6
+				//.bssid = {0x42,0x13,0x37,0x55,0xaa,0x01},
+				//.threshold.authmode = WIFI_AUTH_WPA2_PSK,
+				//.channel = 6
         	},
     	};
 
