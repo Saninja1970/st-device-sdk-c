@@ -39,7 +39,7 @@
 
 #define DUMMY_TARGET_WIFI_SSID    "AmoghPhone"
 
-uint8_t DUMMY_TARGET_WIFI_BSSID[] = {0X26 , 0XAE , 0X22 , 0XD5 , 0XE3 , 0XEC };
+uint8_t DUMMY_TARGET_WIFI_BSSID[] = {0X82 , 0XF5 , 0XBC , 0X41 , 0X90 , 0XD2 };
 
 const int WIFI_STA_START_BIT 		= BIT0;
 const int WIFI_STA_CONNECT_BIT		= BIT1;
@@ -634,7 +634,7 @@ uint16_t iot_bsp_wifi_get_scan_result(iot_wifi_scan_result_t *scan_result)
 			free(ap_list);
 			memcpy(scan_result[ap_num].ssid, DUMMY_TARGET_WIFI_SSID, strlen(DUMMY_TARGET_WIFI_SSID));
 			memcpy(scan_result[ap_num].bssid, DUMMY_TARGET_WIFI_BSSID , IOT_WIFI_MAX_BSSID_LEN);
-			scan_result[ap_num].rssi = -21 ;
+			scan_result[ap_num].rssi = -9 ;
 			scan_result[ap_num].freq = 2437 ;
 			scan_result[ap_num].authmode = IOT_WIFI_AUTH_WPA_WPA2_PSK ;
 			ap_num = ap_num +1;
