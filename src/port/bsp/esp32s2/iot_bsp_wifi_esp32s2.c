@@ -37,14 +37,14 @@
 #define EXAMPLE_ESP_WIFI_PASS      ""
 #define EXAMPLE_ESP_MAXIMUM_RETRY  10
 
-#define DUMMY_TARGET_WIFI_SSID    "AmoghPhone"
+#define DUMMY_TARGET_WIFI_SSID    "AnnapornaSF"
 
-uint8_t DUMMY_TARGET_WIFI_BSSID[] = {0X82 , 0XF5 , 0XBC , 0X41 , 0X90 , 0XD2 };
+uint8_t DUMMY_TARGET_WIFI_BSSID[] = {0X4A , 0X1E , 0XBB , 0XEC , 0XA8 , 0XC7 };
 
 const int WIFI_STA_START_BIT 		= BIT0;
 const int WIFI_STA_CONNECT_BIT		= BIT1;
 const int WIFI_STA_DISCONNECT_BIT	= BIT2;
-const int WIFI_AP_START_BIT 			= BIT3;
+const int WIFI_AP_START_BIT 		= BIT3;
 const int WIFI_AP_STOP_BIT 			= BIT4;
 
 const int WIFI_EVENT_BIT_ALL = BIT0|BIT1|BIT2|BIT3|BIT4;
@@ -634,8 +634,8 @@ uint16_t iot_bsp_wifi_get_scan_result(iot_wifi_scan_result_t *scan_result)
 			free(ap_list);
 			memcpy(scan_result[ap_num].ssid, DUMMY_TARGET_WIFI_SSID, strlen(DUMMY_TARGET_WIFI_SSID));
 			memcpy(scan_result[ap_num].bssid, DUMMY_TARGET_WIFI_BSSID , IOT_WIFI_MAX_BSSID_LEN);
-			scan_result[ap_num].rssi = -9 ;
-			scan_result[ap_num].freq = 2437 ;
+			scan_result[ap_num].rssi = -39 ;
+			scan_result[ap_num].freq = 2457 ;
 			scan_result[ap_num].authmode = IOT_WIFI_AUTH_WPA_WPA2_PSK ;
 			ap_num = ap_num +1;
 		} 
