@@ -18,7 +18,7 @@
 #include "iot_easysetup_http_impl.h"
 #include "iot_easysetup.h"
 
-#define HTTP_PORT 9988
+#define HTTP_PORT 80
 
 bool is_http_conn_handle_initialized(HTTP_CONN_H *handle)
 {
