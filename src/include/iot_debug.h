@@ -25,6 +25,8 @@ extern "C" {
 
 #include "iot_dump_log.h"
 
+#define CONFIG_STDK_IOT_CORE_LOG_LEVEL_DEBUG
+
 /**
  * @name iot_debug_level_t
  * @brief internal debug level.
