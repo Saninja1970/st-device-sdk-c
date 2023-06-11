@@ -469,6 +469,7 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 {
 	HIT();
 	IOT_WARN_CHECK(wifi_prov == NULL, IOT_ERROR_INVALID_ARGS, "Invalid args 'NULL'");
+	printf("[Simulator] iot_nv_set_wifi_prov_data: enter\n");
 	/*
 	 * Todo :
 	 * IOT_NVD_WIFI_PROV_STATUS
@@ -493,7 +494,7 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 
 	ret = _iot_nv_write_data(IOT_NVD_WIFI_PROV_STATUS, data, size);
 	if (ret != IOT_ERROR_NONE) {
-		IOT_DEBUG("Wifi Prov Status : write failed");
+		IOT_ERROR("Wifi Prov Status : write failed");
 		IOT_DUMP(IOT_DEBUG_LEVEL_DEBUG, IOT_DUMP_NV_DATA_WRITE_FAIL, IOT_NVD_WIFI_PROV_STATUS, __LINE__);
 		ret = IOT_ERROR_NV_DATA_ERROR;
 		goto exit;
@@ -509,7 +510,7 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 
 		ret = _iot_nv_write_data(IOT_NVD_AP_SSID, data, size);
 		if (ret != IOT_ERROR_NONE) {
-			IOT_DEBUG("AP SSID : write failed");
+			IOT_ERROR("AP SSID : write failed");
 			IOT_DUMP(IOT_DEBUG_LEVEL_DEBUG, IOT_DUMP_NV_DATA_WRITE_FAIL, IOT_NVD_AP_SSID, __LINE__);
 			ret = IOT_ERROR_NV_DATA_ERROR;
 			goto exit;
@@ -526,7 +527,7 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 
 		ret = _iot_nv_write_data(IOT_NVD_AP_PASS, data, size);
 		if (ret != IOT_ERROR_NONE) {
-			IOT_DEBUG("AP PASS : write failed");
+			IOT_ERROR("AP PASS : write failed");
 			IOT_DUMP(IOT_DEBUG_LEVEL_DEBUG, IOT_DUMP_NV_DATA_WRITE_FAIL, IOT_NVD_AP_PASS, __LINE__);
 			ret = IOT_ERROR_NV_DATA_ERROR;
 			goto exit;
@@ -543,7 +544,7 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 
 		ret = _iot_nv_write_data(IOT_NVD_AP_BSSID, data, size);
 		if (ret != IOT_ERROR_NONE) {
-			IOT_DEBUG("AP BSSID : write failed");
+			IOT_ERROR("AP BSSID : write failed");
 			IOT_DUMP(IOT_DEBUG_LEVEL_DEBUG, IOT_DUMP_NV_DATA_WRITE_FAIL, IOT_NVD_AP_BSSID, __LINE__);
 			ret = IOT_ERROR_NV_DATA_ERROR;
 			goto exit;
@@ -556,7 +557,7 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 	} else {
 		state = snprintf(data, DATA_SIZE, "%d", wifi_prov->security_type);
 		if (state <= 0) {
-			IOT_DEBUG("Auth Type : data load failed from prov structure");
+			IOT_ERROR("Auth Type : data load failed from prov structure");
 			ret = IOT_ERROR_NV_DATA_ERROR;
 			goto exit;
 		}
@@ -566,7 +567,7 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 
 		ret = _iot_nv_write_data(IOT_NVD_AP_AUTH_TYPE, data, size);
 		if (ret != IOT_ERROR_NONE) {
-			IOT_DEBUG("Auth Type : write failed");
+			IOT_ERROR("Auth Type : write failed");
 			IOT_DUMP(IOT_DEBUG_LEVEL_DEBUG, IOT_DUMP_NV_DATA_WRITE_FAIL, IOT_NVD_AP_AUTH_TYPE, __LINE__);
 			ret = IOT_ERROR_NV_DATA_ERROR;
 			goto exit;
@@ -580,12 +581,12 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 
 	ret = _iot_nv_write_data(IOT_NVD_WIFI_PROV_STATUS, data, size);
 	if (ret != IOT_ERROR_NONE) {
-		IOT_DEBUG("Wifi Prov Status : write failed");
+		IOT_ERROR("Wifi Prov Status : write failed");
 		IOT_DUMP(IOT_DEBUG_LEVEL_DEBUG, IOT_DUMP_NV_DATA_WRITE_FAIL, IOT_NVD_WIFI_PROV_STATUS, __LINE__);
 		ret = IOT_ERROR_NV_DATA_ERROR;
 		goto exit;
 	}
-
+printf("[Simulator] iot_nv_set_wifi_prov_data: EXIT\n");
 exit:
 	free(data);
 

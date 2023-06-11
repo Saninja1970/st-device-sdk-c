@@ -111,7 +111,7 @@ iot_error_t iot_security_storage_read(iot_security_context_t *context, iot_secur
 {
 	iot_error_t err;
 
-	IOT_DEBUG("id:%d", storage_id);
+	IOT_INFO("id:%d", storage_id);
 
 	err = iot_security_check_backend_funcs_entry_is_valid(context);
 	if (err) {
@@ -138,12 +138,12 @@ iot_error_t iot_security_storage_read(iot_security_context_t *context, iot_secur
 	err = context->be_context->fn->storage_read(context, output_buf);
 	if (err) {
 		if (err == IOT_ERROR_SECURITY_FS_NOT_FOUND) {
-			IOT_DEBUG("id:%d not found", context->storage_params->storage_id);
+			IOT_ERROR("id:%d not found", context->storage_params->storage_id);
 		}
 		return err;
 	}
 
-	IOT_DEBUG("id:%d read %d@%p", context->storage_params->storage_id, (int)output_buf->len, output_buf->p);
+	IOT_INFO("id:%d read %d@%p", context->storage_params->storage_id, (int)output_buf->len, output_buf->p);
 
 	return IOT_ERROR_NONE;
 }
@@ -152,7 +152,7 @@ iot_error_t iot_security_storage_write(iot_security_context_t *context, iot_secu
 {
 	iot_error_t err;
 
-	IOT_DEBUG("id:%d", storage_id);
+	IOT_INFO("id:%d", storage_id);
 
 	err = iot_security_check_backend_funcs_entry_is_valid(context);
 	if (err) {
@@ -179,7 +179,7 @@ iot_error_t iot_security_storage_write(iot_security_context_t *context, iot_secu
 		return err;
 	}
 
-	IOT_DEBUG("id:%d written %d@%p", context->storage_params->storage_id, (int)input_buf->len, input_buf->p);
+	IOT_INFO("id:%d written %d@%p", context->storage_params->storage_id, (int)input_buf->len, input_buf->p);
 
 	return IOT_ERROR_NONE;
 }
@@ -188,7 +188,7 @@ iot_error_t iot_security_storage_remove(iot_security_context_t *context, iot_sec
 {
 	iot_error_t err;
 
-	IOT_DEBUG("id:%d", storage_id);
+	IOT_INFO("id:%d", storage_id);
 
 	err = iot_security_check_backend_funcs_entry_is_valid(context);
 	if (err) {
@@ -208,12 +208,12 @@ iot_error_t iot_security_storage_remove(iot_security_context_t *context, iot_sec
 	err = context->be_context->fn->storage_remove(context);
 	if (err) {
 		if (err == IOT_ERROR_SECURITY_FS_NOT_FOUND) {
-			IOT_DEBUG("id:%d not found", context->storage_params->storage_id);
+			IOT_ERROR("id:%d not found", context->storage_params->storage_id);
 		}
 		return err;
 	}
 
-	IOT_DEBUG("id:%d removed", context->storage_params->storage_id);
+	IOT_INFO("id:%d removed", context->storage_params->storage_id);
 
 	return IOT_ERROR_NONE;
 }

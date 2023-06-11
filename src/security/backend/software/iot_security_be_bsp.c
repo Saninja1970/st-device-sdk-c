@@ -184,7 +184,9 @@ iot_error_t _iot_security_be_bsp_fs_load(iot_security_be_context_t *be_context, 
 {
 	iot_security_storage_target_t storage_target;
 
-	IOT_DEBUG("id = %d", storage_id);
+	printf("[Simulator] _iot_security_be_bsp_fs_load: enter\n");
+
+	IOT_INFO("id = %d", storage_id);
 
 	if (!be_context) {
 		IOT_ERROR_DUMP_AND_RETURN(BE_CONTEXT_NULL, 0);
@@ -253,7 +255,10 @@ iot_error_t _iot_security_be_bsp_fs_store(iot_security_be_context_t *be_context,
 {
 	iot_security_storage_target_t storage_target;
 
-	IOT_DEBUG("id = %d", storage_id);
+	printf("[Simulator] _iot_security_be_bsp_fs_store: enter\n");
+
+	IOT_INFO("id = %d", storage_id);
+	
 
 	if (!input_buf || !input_buf->p || (input_buf->len == 0)) {
 		IOT_ERROR("input buffer is invalid");
@@ -306,7 +311,9 @@ iot_error_t _iot_security_be_bsp_fs_remove(iot_security_be_context_t *be_context
 {
 	iot_security_storage_target_t storage_target;
 
-	IOT_DEBUG("id = %d", storage_id);
+	printf("[Simulator] _iot_security_be_bsp_fs_remove: enter\n");
+
+	IOT_INFO("id = %d", storage_id);
 
 	storage_target = _iot_security_be_bsp_fs_storage_id2target(storage_id);
 
