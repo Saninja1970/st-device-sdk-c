@@ -638,7 +638,7 @@ uint16_t iot_bsp_wifi_get_scan_result(iot_wifi_scan_result_t *scan_result)
 			memcpy(scan_result[ap_num].bssid, DUMMY_TARGET_WIFI_BSSID , IOT_WIFI_MAX_BSSID_LEN);
 			scan_result[ap_num].rssi = -39 ;
 			scan_result[ap_num].freq = 2457 ;
-			scan_result[ap_num].authmode = IOT_WIFI_AUTH_WPA_WPA2_PSK ;
+			scan_result[ap_num].authmode = IOT_WIFI_AUTH_WPA2_PSK ;
 			ap_num = ap_num +1;
 		} 
 	} else {

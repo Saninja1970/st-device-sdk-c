@@ -1138,8 +1138,11 @@ iot_wifi_auth_mode_t _decide_wifi_auth_mode(const JSON_H *item, struct iot_wifi_
 			}
 		}
 	} else {
+		printf("[Simulator] _decide_wifi_auth_mode:ctx->scan_num =  %d\n",ctx->scan_num);
+
 		for (i = 0; i < ctx->scan_num; i++) {
 			if (!strcmp(wifi_prov->ssid, (char *)ctx->scan_result[i].ssid)) {
+				printf("[Simulator] _decide_wifi_auth_mode: found matched ssid = %s\n",wifi_prov->ssid );
 				if (item->valueint == ctx->scan_result[i].authmode) {
 					auth_mode = item->valueint;
 				} else {
@@ -1151,7 +1154,7 @@ iot_wifi_auth_mode_t _decide_wifi_auth_mode(const JSON_H *item, struct iot_wifi_
 		if (i == ctx->scan_num) {
 			auth_mode = item->valueint;
 		}
-		IOT_DEBUG("%s is type %d", wifi_prov->ssid, auth_mode);
+		IOT_INFO("%s is type %d", wifi_prov->ssid, auth_mode);
 	}
 
 	return auth_mode;

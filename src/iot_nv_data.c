@@ -499,14 +499,16 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 		ret = IOT_ERROR_NV_DATA_ERROR;
 		goto exit;
 	}
-
+	printf("[Simulator] iot_nv_set_wifi_prov_data: wrote none to prov status\n");
 	/* IOT_NVD_AP_SSID */
 	if (wifi_prov->ssid[0] == '\0') {
 		iot_nv_erase(IOT_NVD_AP_SSID);
 	} else {
 		size = IOT_WIFI_PROV_SSID_STR_LEN;
 		memcpy(data, wifi_prov->ssid, size);
+
 		data[size] = '\0';
+
 
 		ret = _iot_nv_write_data(IOT_NVD_AP_SSID, data, size);
 		if (ret != IOT_ERROR_NONE) {
@@ -516,7 +518,7 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 			goto exit;
 		}
 	}
-
+	printf("[Simulator] iot_nv_set_wifi_prov_data: wrote ssid\n");
 	/* IOT_NVD_AP_PASS */
 	if (wifi_prov->password[0] == '\0') {
 		iot_nv_erase(IOT_NVD_AP_PASS);
@@ -533,7 +535,7 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 			goto exit;
 		}
 	}
-
+	printf("[Simulator] iot_nv_set_wifi_prov_data: wrote password\n");
 	/* IOT_NVD_AP_BSSID */
 	if (wifi_prov->mac_str[0] == '\0') {
 		iot_nv_erase(IOT_NVD_AP_BSSID);
@@ -550,7 +552,7 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 			goto exit;
 		}
 	}
-
+	printf("[Simulator] iot_nv_set_wifi_prov_data: wrote Bssid\n");
 	/* IOT_NVD_AP_AUTH_TYPE */
 	if (wifi_prov->security_type < IOT_WIFI_AUTH_OPEN || wifi_prov->security_type > IOT_WIFI_AUTH_MAX) {
 		iot_nv_erase(IOT_NVD_AP_AUTH_TYPE);
@@ -573,7 +575,7 @@ iot_error_t iot_nv_set_wifi_prov_data(struct iot_wifi_prov_data* wifi_prov)
 			goto exit;
 		}
 	}
-
+	printf("[Simulator] iot_nv_set_wifi_prov_data: wrote authtype\n");
 	/* IOT_NVD_WIFI_PROV_STATUS - DONE */
 	size = 4;
 	memcpy(data, "DONE", size);
