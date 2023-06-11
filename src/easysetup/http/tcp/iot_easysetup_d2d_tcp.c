@@ -1166,7 +1166,10 @@ iot_error_t _es_wifi_prov_parse(struct iot_context *ctx, char *in_payload)
 	JSON_H *wifi_credential = NULL;
 	iot_error_t err = IOT_ERROR_NONE;
 
+	printf("[Simulator] _es_wifi_prov_parse: %s\n",in_payload);
+
 	root = JSON_PARSE(in_payload);
+
 	if (!root) {
 		IOT_ERROR("Invalid args");
 		IOT_ES_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_EASYSETUP_INVALID_REQUEST, 0);

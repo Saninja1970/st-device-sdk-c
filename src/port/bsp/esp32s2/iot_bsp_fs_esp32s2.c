@@ -186,19 +186,21 @@ iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *le
 	esp_err_t ret;
 	size_t required_size;
 
+	printf("[Simulator] iot_bsp_fs_read: enter\n");
+
 	ret = nvs_get_str(handle.fd, handle.filename, NULL, &required_size);
 	if (ret == ESP_ERR_NVS_NOT_FOUND) {
-		IOT_DEBUG("not found '%s'", handle.filename);
+		IOT_ERROR("not found '%s'", handle.filename);
 		return IOT_ERROR_FS_NO_FILE;
 	} else if (ret != ESP_OK) {
-		IOT_DEBUG("nvs read failed [%s]", _get_error_string(ret));
+		IOT_ERROR("nvs read failed [%s]", _get_error_string(ret));
 		return IOT_ERROR_FS_READ_FAIL;
 	}
 
 	char* data = malloc(required_size);
 	ret = nvs_get_str(handle.fd, handle.filename, data, &required_size);
 	if (ret != ESP_OK) {
-		IOT_DEBUG("nvs read failed [%s]", _get_error_string(ret));
+		IOT_ERROR("nvs read failed [%s]", _get_error_string(ret));
 		free(data);
 		return IOT_ERROR_FS_READ_FAIL;
 	}
@@ -219,8 +221,11 @@ iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *le
 
 iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsigned int length)
 {
+	printf("[Simulator] iot_bsp_fs_write: enter\n");
 	esp_err_t ret = nvs_set_str(handle.fd, handle.filename, data);
 	IOT_DEBUG_CHECK(ret != ESP_OK, IOT_ERROR_FS_WRITE_FAIL, "nvs write failed [%s]", _get_error_string(ret));
+
+	IOT_INFO("nvs write failed [%s]", _get_error_string(ret));
 
 	return IOT_ERROR_NONE;
 }
