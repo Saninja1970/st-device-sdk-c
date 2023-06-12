@@ -188,7 +188,7 @@ iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *le
 
 	printf("[Simulator] iot_bsp_fs_read: enter\n");
 
-	ret = nvs_get_sxtr(handle.fd, handle.filename, NULL, &required_size);
+	ret = nvs_get_str(handle.fd, handle.filename, NULL, &required_size);
 	if (ret == ESP_ERR_NVS_NOT_FOUND) {
 		IOT_ERROR("not found '%s'", handle.filename);
 		return IOT_ERROR_FS_NO_FILE;
