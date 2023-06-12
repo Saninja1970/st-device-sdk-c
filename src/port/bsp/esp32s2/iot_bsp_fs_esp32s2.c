@@ -225,8 +225,24 @@ iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsig
 	printf("[Simulator] iot_bsp_fs_write: data = %s\n",data);
 	esp_err_t ret = nvs_set_str(handle.fd, handle.filename, data);
 	IOT_DEBUG_CHECK(ret != ESP_OK, IOT_ERROR_FS_WRITE_FAIL, "nvs write failed [%s]", _get_error_string(ret));
-	if(ret != ESP_OK){
-		IOT_INFO("nvs write failed [%s]", _get_error_string(ret));
+
+	if(ret == ESP_ERR_NVS_INVALID_HANDLE ){
+		IOT_INFO("nvs write failed = ESP_ERR_NVS_INVALID_HANDLE  [%s]", _get_error_string(ret));
+	}
+	else if(ret == ESP_ERR_NVS_READ_ONLY){
+		IOT_INFO("nvs write failed = ESP_ERR_NVS_READ_ONLY  [%s]", _get_error_string(ret));
+	}
+	else if(ret == ESP_ERR_NVS_INVALID_NAME ){
+		IOT_INFO("nvs write failed = ESP_ERR_NVS_INVALID_NAME   [%s]", _get_error_string(ret));
+	}
+	else if(ret == ESP_ERR_NVS_NOT_ENOUGH_SPACE  ){
+		IOT_INFO("nvs write failed = ESP_ERR_NVS_NOT_ENOUGH_SPACE    [%s]", _get_error_string(ret));
+	}
+	else if(ret == ESP_ERR_NVS_REMOVE_FAILED   ){
+		IOT_INFO("nvs write failed = ESP_ERR_NVS_REMOVE_FAILED     [%s]", _get_error_string(ret));
+	}
+	else if(ret == ESP_ERR_NVS_VALUE_TOO_LONG    ){
+		IOT_INFO("nvs write failed = ESP_ERR_NVS_VALUE_TOO_LONG      [%s]", _get_error_string(ret));
 	}
 	else{
 		IOT_INFO("nvs write success [%s]", _get_error_string(ret));
