@@ -1158,7 +1158,7 @@ iot_wifi_auth_mode_t _decide_wifi_auth_mode(const JSON_H *item, struct iot_wifi_
 	}
 
 	return auth_mode;
-}
+} 
 
 STATIC_FUNCTION
 iot_error_t _es_wifi_prov_parse(struct iot_context *ctx, char *in_payload)
