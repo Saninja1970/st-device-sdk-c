@@ -223,7 +223,9 @@ iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsig
 {
 	printf("[Simulator] iot_bsp_fs_write: enter\n");
 	printf("[Simulator] iot_bsp_fs_write: data = %s\n",data);
-	esp_err_t ret = nvs_set_str(handle.fd, handle.filename, data);
+	esp_err_t ret;
+
+	ret = nvs_set_str(handle.fd, handle.filename, data);
 	IOT_DEBUG_CHECK(ret != ESP_OK, IOT_ERROR_FS_WRITE_FAIL, "nvs write failed [%s]", _get_error_string(ret));
 
 	if(ret == ESP_ERR_NVS_INVALID_HANDLE ){
@@ -248,7 +250,17 @@ iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsig
 		IOT_INFO("nvs write success [%s]", _get_error_string(ret));
 	}
 
+	ret = nvs_commit(handle.fd);
+	if(ret!=ESP_0K){
+		IOT_INFO("nvs_commit failed");
+	}
+	else{
+		IOT_INFO("nvs_commit success");
+	}
+	
 	return IOT_ERROR_NONE;
+
+
 }
 
 iot_error_t iot_bsp_fs_close(iot_bsp_fs_handle_t handle)
