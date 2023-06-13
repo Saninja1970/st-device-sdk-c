@@ -251,13 +251,13 @@ iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsig
 	}
 
 	ret = nvs_commit(handle.fd);
-	if(ret!=ESP_0K){
+	if(ret!=ESP_OK){
 		IOT_INFO("nvs_commit failed");
 	}
 	else{
 		IOT_INFO("nvs_commit success");
 	}
-	
+
 	return IOT_ERROR_NONE;
 
 
