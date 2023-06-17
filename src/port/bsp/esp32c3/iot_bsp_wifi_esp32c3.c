@@ -40,6 +40,16 @@
 
 #include "lwip/apps/sntp.h"
 
+#define EXAMPLE_ESP_WIFI_SSID      "Wokwi-GUEST"
+#define EXAMPLE_ESP_WIFI_PASS      ""
+#define EXAMPLE_ESP_MAXIMUM_RETRY  10
+
+#define DUMMY_TARGET_WIFI_SSID    "AnnapornaSF"
+
+//uint8_t DUMMY_TARGET_WIFI_BSSID[] = {0X4A , 0X1E , 0XBB , 0XEC , 0XA8 , 0XC7 };
+
+uint8_t DUMMY_TARGET_WIFI_BSSID[] = {0XE8 , 0X48 , 0XB8 , 0XE0 , 0X8D , 0X90 };
+
 const int WIFI_STA_START_BIT 		= BIT0;
 const int WIFI_STA_CONNECT_BIT		= BIT1;
 const int WIFI_STA_DISCONNECT_BIT	= BIT2;
@@ -340,17 +350,16 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 		break;
 
 	case IOT_WIFI_MODE_STATION:
-
-		esp_ret = esp_wifi_get_mode(&mode);
+/*esp_ret = esp_wifi_get_mode(&mode);
 		if(esp_ret != ESP_OK) {
 			IOT_ERROR("esp_wifi_get_mode failed err=[%d]", esp_ret);
 			IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_SETMODE_FAIL, conf->mode, esp_ret);
 			return IOT_ERROR_CONN_OPERATE_FAIL;
 		}
 
-		/*AP connection is not allowed in WIFI_MODE_APSTA and WIFI_MODE_AP*/
+		//AP connection is not allowed in WIFI_MODE_APSTA and WIFI_MODE_AP
 		if(mode == WIFI_MODE_AP || mode == WIFI_MODE_APSTA) {
-			IOT_INFO("[esp32c3] current mode=%d need to call esp_wifi_stop", mode);
+			IOT_INFO("[esp32s2] current mode=%d need to call esp_wifi_stop", mode);
 			ESP_ERROR_CHECK(esp_wifi_stop());
 
 			uxBits = xEventGroupWaitBits(wifi_event_group, WIFI_AP_STOP_BIT,
@@ -424,47 +433,132 @@ iot_error_t iot_bsp_wifi_set_mode(iot_wifi_conf *conf)
 		if (timeinfo.tm_year < (2016 - 1900)) {
 			IOT_INFO("Time is not set yet. Connecting to WiFi and getting time over NTP.");
 			_obtain_time();
-		}
+		}*/
+
 
 		break;
 
 	case IOT_WIFI_MODE_SOFTAP:
 
-		str_len = strlen(conf->ssid);
-		memcpy(wifi_config.ap.ssid, conf->ssid, (str_len > IOT_WIFI_MAX_SSID_LEN) ? IOT_WIFI_MAX_SSID_LEN : str_len);
-
-		str_len =  strlen(conf->pass);
-		memcpy(wifi_config.ap.password, conf->pass, (str_len > IOT_WIFI_MAX_PASS_LEN) ? IOT_WIFI_MAX_PASS_LEN : str_len);
-
-		wifi_config.ap.ssid_len = strlen(conf->ssid);
-		wifi_config.ap.max_connection = 1;
-		wifi_config.ap.channel = IOT_SOFT_AP_CHANNEL;
-		wifi_config.ap.beacon_interval = 100;
-		wifi_config.ap.ssid_hidden = false;
-
-		if(strlen(conf->pass) == 0){
-			wifi_config.ap.authmode = WIFI_AUTH_OPEN;
+		esp_ret = esp_wifi_get_mode(&mode);
+		if(esp_ret != ESP_OK) {
+			IOT_ERROR("esp_wifi_get_mode failed err=[%d]", esp_ret);
+			IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_SETMODE_FAIL, conf->mode, esp_ret);
+			return IOT_ERROR_CONN_OPERATE_FAIL;
 		}
-		else{
-			wifi_config.ap.authmode = WIFI_AUTH_WPA_WPA2_PSK;
+
+		/*AP connection is not allowed in WIFI_MODE_APSTA and WIFI_MODE_AP*/
+		if(mode == WIFI_MODE_AP || mode == WIFI_MODE_APSTA ) {
+			IOT_INFO("[esp32c3] current mode=%d need to call esp_wifi_stop", mode);
+			ESP_ERROR_CHECK(esp_wifi_stop());
+
+			uxBits = xEventGroupWaitBits(wifi_event_group, WIFI_AP_STOP_BIT,
+					true, false, IOT_WIFI_CMD_TIMEOUT);
+
+			if(uxBits & WIFI_AP_STOP_BIT) {
+				IOT_INFO("AP Mode stopped");
+				IOT_DELAY(500);
+			}
+			else {
+				IOT_ERROR("WIFI_AP_STOP_BIT event Timeout");
+				IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_TIMEOUT, mode, __LINE__);
+				return IOT_ERROR_CONN_OPERATE_FAIL;
+			}
 		}
-		ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
-		ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_AP, &wifi_config));
+
+		if(mode == WIFI_MODE_STA ) {
+			IOT_INFO("[esp32s2] current mode=%d need to call esp_wifi_stop", mode);
+			ESP_ERROR_CHECK(esp_wifi_stop());
+
+			/*uxBits = xEventGroupWaitBits(wifi_event_group, WIFI_STA_DISCONNECT_BIT,true, false, IOT_WIFI_CMD_TIMEOUT);
+
+			if(uxBits & WIFI_STA_DISCONNECT_BIT) {
+				IOT_INFO("STA Mode stopped");
+				IOT_DELAY(500);
+			}
+			else {
+				IOT_ERROR("WIFI_STA_DISCONNECT_BIT event Timeout");
+				IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_TIMEOUT, mode, __LINE__);
+				return IOT_ERROR_CONN_OPERATE_FAIL;
+			}*/
+
+		}
+		/*str_len = strlen(conf->ssid);
+		if(str_len) {
+			memcpy(wifi_config.sta.ssid, conf->ssid, (str_len > IOT_WIFI_MAX_SSID_LEN) ? IOT_WIFI_MAX_SSID_LEN : str_len);
+		}
+
+		str_len = strlen(conf->pass);
+		if(str_len) {
+			memcpy(wifi_config.sta.password, conf->pass, (str_len > IOT_WIFI_MAX_PASS_LEN) ? IOT_WIFI_MAX_PASS_LEN : str_len);
+		}*/
+
+		wifi_config_t wifi_config = {
+        	.sta = {
+           		.ssid = EXAMPLE_ESP_WIFI_SSID,
+            	.password = EXAMPLE_ESP_WIFI_PASS,
+				//.bssid = {0x42,0x13,0x37,0x55,0xaa,0x01},
+				//.threshold.authmode = WIFI_AUTH_WPA2_PSK,
+				//.channel = 6
+        	},
+    	};
+
+		IOT_INFO("target mac=%2X:%2X:%2X:%2X:%2X:%2X",
+					wifi_config.sta.bssid[0], wifi_config.sta.bssid[1], wifi_config.sta.bssid[2],
+					wifi_config.sta.bssid[3], wifi_config.sta.bssid[4], wifi_config.sta.bssid[5]);
+
+		/*str_len = strlen((char *)conf->bssid);
+		if(str_len) {
+			memcpy(wifi_config.sta.bssid, conf->bssid, IOT_WIFI_MAX_BSSID_LEN);
+			wifi_config.sta.bssid_set = true;
+
+			IOT_DEBUG("target mac=%2X:%2X:%2X:%2X:%2X:%2X",
+					wifi_config.sta.bssid[0], wifi_config.sta.bssid[1], wifi_config.sta.bssid[2],
+					wifi_config.sta.bssid[3], wifi_config.sta.bssid[4], wifi_config.sta.bssid[5]);
+		}*/
+
+		/*if (conf->authmode == IOT_WIFI_AUTH_WPA3_PERSONAL) {
+			wifi_config.sta.threshold.authmode = WIFI_AUTH_WPA3_PSK;
+			// set PMF (Protected Management Frames) optional mode for better compatibility
+			wifi_config.sta.pmf_cfg.capable = true;
+			wifi_config.sta.pmf_cfg.required = false;
+		}*/
+		//s_latest_disconnect_reason = IOT_ERROR_CONN_CONNECT_FAIL;
+
+		ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+		ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
 		ESP_ERROR_CHECK(esp_wifi_start());
 
-		IOT_DEBUG("wifi_init_softap finished.SSID:%s password:%s",
-				wifi_config.ap.ssid, wifi_config.ap.password);
+		IOT_INFO("connect to ap SSID:%s", wifi_config.sta.ssid);
 
-		uxBits=xEventGroupWaitBits(wifi_event_group, WIFI_AP_START_BIT,
+		
+
+
+
+		uxBits = xEventGroupWaitBits(wifi_event_group, WIFI_STA_CONNECT_BIT,
 				true, false, IOT_WIFI_CMD_TIMEOUT);
 
-		if(uxBits & WIFI_AP_START_BIT) {
-			IOT_INFO("AP Mode Started");
+		if((uxBits & WIFI_STA_CONNECT_BIT)) {
+			IOT_INFO("AP Connected");
+			IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_CONNECT_SUCCESS, 0, 0);
 		}
 		else {
-				IOT_ERROR("WIFI_AP_START_BIT event Timeout");
-				IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_TIMEOUT, conf->mode, __LINE__);
-				return IOT_ERROR_CONN_SOFTAP_CONF_FAIL;
+			iot_error_t err = IOT_ERROR_CONN_CONNECT_FAIL;
+			if (s_latest_disconnect_reason != IOT_ERROR_CONN_CONNECT_FAIL) {
+				err = s_latest_disconnect_reason;
+			}
+
+			IOT_ERROR("WIFI_STA_CONNECT_BIT event Timeout %d", err);
+			IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_CONNECT_FAIL, IOT_WIFI_CMD_TIMEOUT, err);
+			return err;
+		}
+
+		time(&now);
+		localtime_r(&now, &timeinfo);
+
+		if (timeinfo.tm_year < (2016 - 1900)) {
+			IOT_INFO("Time is not set yet. Connecting to WiFi and getting time over NTP.");
+			_obtain_time();
 		}
 
 		break;
@@ -493,7 +587,7 @@ uint16_t iot_bsp_wifi_get_scan_result(iot_wifi_scan_result_t *scan_result)
 				IOT_WIFI_MAX_SCAN_RESULT : ap_num;
 
 		if(ap_num > 0) {
-			ap_list = (wifi_ap_record_t *) malloc(ap_num * sizeof(wifi_ap_record_t));
+			ap_list = (wifi_ap_record_t *) malloc((ap_num+1) * sizeof(wifi_ap_record_t));
 			if(!ap_list){
 				IOT_ERROR("failed to malloc for wifi_ap_record_t");
 				IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, IOT_DUMP_BSP_WIFI_ERROR, 0, __LINE__);
@@ -535,6 +629,12 @@ uint16_t iot_bsp_wifi_get_scan_result(iot_wifi_scan_result_t *scan_result)
 				}
 			}
 			free(ap_list);
+			memcpy(scan_result[ap_num].ssid, DUMMY_TARGET_WIFI_SSID, strlen(DUMMY_TARGET_WIFI_SSID));
+			memcpy(scan_result[ap_num].bssid, DUMMY_TARGET_WIFI_BSSID , IOT_WIFI_MAX_BSSID_LEN);
+			scan_result[ap_num].rssi = -39 ;
+			scan_result[ap_num].freq = 2457 ;
+			scan_result[ap_num].authmode = IOT_WIFI_AUTH_WPA2_PSK ;
+			ap_num = ap_num +1;
 		}
 	} else {
 		IOT_INFO("failed to get esp_wifi_scan_get_ap_num");
