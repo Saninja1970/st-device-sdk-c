@@ -148,8 +148,10 @@ iot_error_t iot_bsp_fs_open(const char* filename, iot_bsp_fs_open_mode_t mode, i
 
 	if (mode == FS_READONLY) {
 		nvs_open_mode = NVS_READONLY;
+		IOT_INFO("iot_bsp_fs_open NVS_READONLY");
 	} else {
 		nvs_open_mode = NVS_READWRITE;
+		IOT_INFO("iot_bsp_fs_open NVS_READWRITE");
 	}
 
 	esp_err_t ret = nvs_open(STDK_NV_DATA_NAMESPACE, nvs_open_mode, &nvs_handle);
