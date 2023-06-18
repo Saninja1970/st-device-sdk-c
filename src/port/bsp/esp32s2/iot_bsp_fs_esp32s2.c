@@ -227,7 +227,7 @@ iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsig
 	printf("[Simulator] iot_bsp_fs_write: enter\n");
 	printf("[Simulator] iot_bsp_fs_write: data = %s\n",data);	
 
-	printf("[Simulator] iot_bsp_fs_write: handle.fd = %d ; handle.filename = %c\n",handle.fd,handle.filename);
+	printf("[Simulator] iot_bsp_fs_write: handle.fd = %d ; handle.filename = %s\n",handle.fd,handle.filename);
 	
 	
 	esp_err_t ret;
