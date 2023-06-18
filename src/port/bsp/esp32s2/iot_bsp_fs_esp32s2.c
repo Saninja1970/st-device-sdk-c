@@ -155,7 +155,7 @@ iot_error_t iot_bsp_fs_open(const char* filename, iot_bsp_fs_open_mode_t mode, i
 		IOT_INFO("iot_bsp_fs_open NVS_READWRITE");
 	}
 
-	esp_err_t ret = nvs_open(STDK_NV_DATA_NAMESPACE, nvs_open_mode, &nvs_handle);
+	esp_err_t ret = nvs_open(STDK_NV_DATA_NAMESPACE, NVS_READWRITE, &nvs_handle);      //   Force ReadWrite mode
 	if (ret == ESP_OK) {
 		handle->fd = nvs_handle;
 		snprintf(handle->filename, sizeof(handle->filename), "%s", filename);
