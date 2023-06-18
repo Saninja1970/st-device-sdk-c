@@ -15,7 +15,7 @@
  * language governing permissions and limitations under the License.
  *
  ****************************************************************************/
-
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <esp_err.h>
@@ -28,6 +28,100 @@
 
 #define STDK_NV_DATA_PARTITION "stnv"
 #define STDK_NV_DATA_NAMESPACE "stdk"
+
+
+//*********************************************************************
+#define MAX_FILENAME_LENGTH 100
+#define MAX_FILE_CONTENT_LENGTH 1000
+#define HASH_TABLE_SIZE 100
+char buffer1[MAX_FILE_CONTENT_LENGTH]; 
+
+typedef struct {
+    char filename[MAX_FILENAME_LENGTH];
+    char content[MAX_FILE_CONTENT_LENGTH];
+} File;
+
+typedef struct {
+    File files[HASH_TABLE_SIZE];
+} HashTable;
+
+unsigned int hash(const char* filename) {
+    unsigned int hash = 0;
+    for (int i = 0; filename[i] != '\0'; i++) {
+        hash = hash * 31 + filename[i];
+    }
+    return hash % HASH_TABLE_SIZE;
+}
+
+void insertFile(HashTable* hashTable, const char* filename, const char* content) {
+    unsigned int index = hash(filename);
+    strncpy(hashTable->files[index].filename, filename, MAX_FILENAME_LENGTH);
+    strncpy(hashTable->files[index].content, content, MAX_FILE_CONTENT_LENGTH);
+}
+
+// const char* getFileContent(HashTable* hashTable, const char* filename) {
+//     unsigned int index = hash(filename);
+//     while (strcmp(hashTable->files[index].filename, filename) != 0) {
+//         index = (index + 1) % HASH_TABLE_SIZE;
+//         if (hashTable->files[index].filename[0] == '\0') {
+//             return NULL;  // File not found
+//         }
+//     }
+//     return hashTable->files[index].content;
+// }
+
+void readFile(HashTable* hashTable, const char* filename) {
+    unsigned int index = hash(filename);
+    while (strcmp(hashTable->files[index].filename, filename) != 0) {
+        index = (index + 1) % HASH_TABLE_SIZE;
+        if (hashTable->files[index].filename[0] == '\0') {
+            buffer1[0] = '\0';  // Set buffer to an empty string
+            return;  // File not found
+        }
+    }
+
+    strncpy(buffer1, hashTable->files[index].content, MAX_FILE_CONTENT_LENGTH);
+    buffer1[MAX_FILE_CONTENT_LENGTH - 1] = '\0';  // Ensure buffer is null-terminated
+}
+void deleteFile(HashTable* hashTable, const char* filename) {
+    unsigned int index = hash(filename);
+    while (strcmp(hashTable->files[index].filename, filename) != 0) {
+        index = (index + 1) % HASH_TABLE_SIZE;
+        if (hashTable->files[index].filename[0] == '\0') {
+            return;  // File not found
+        }
+    }
+    hashTable->files[index].filename[0] = '\0';  // Mark the slot as empty
+}
+
+typedef struct {
+    HashTable hashTable;
+} FileSystem;
+
+FileSystem fileSystem;
+
+//88888888888888888888888888888888888888888888888888888888888888
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if 0
 
 static const char* _get_error_string(esp_err_t err) {
 
@@ -100,10 +194,14 @@ static iot_error_t _iot_bsp_fs_get_secure_config(nvs_sec_cfg_t *cfg)
 	return IOT_ERROR_NONE;
 }
 #endif
+#endif
 
 
-iot_error_t iot_bsp_fs_init()
+#if 0
+
+iot_error_t iot_bsp_fs_init()///////////////
 {
+	
 	esp_err_t ret;
 #if defined(CONFIG_NVS_ENCRYPTION)
 	iot_error_t err;
@@ -131,6 +229,10 @@ iot_error_t iot_bsp_fs_init()
 #endif
 #endif /* CONFIG_NVS_ENCRYPTION */
 	return IOT_ERROR_NONE;
+
+	
+	
+
 }
 
 iot_error_t iot_bsp_fs_deinit()
@@ -144,6 +246,7 @@ iot_error_t iot_bsp_fs_deinit()
 
 iot_error_t iot_bsp_fs_open(const char* filename, iot_bsp_fs_open_mode_t mode, iot_bsp_fs_handle_t* handle)
 {
+	
 	nvs_handle nvs_handle;
 	nvs_open_mode nvs_open_mode;
 
@@ -155,7 +258,7 @@ iot_error_t iot_bsp_fs_open(const char* filename, iot_bsp_fs_open_mode_t mode, i
 		IOT_INFO("iot_bsp_fs_open NVS_READWRITE");
 	}
 
-	esp_err_t ret = nvs_open(STDK_NV_DATA_NAMESPACE, nvs_open_mode, &nvs_handle);      
+	esp_err_t ret = nvs_open(STDK_NV_DATA_NAMESPACE, nvs_open_mode, &nvs_handle);
 	if (ret == ESP_OK) {
 		handle->fd = nvs_handle;
 		snprintf(handle->filename, sizeof(handle->filename), "%s", filename);
@@ -164,6 +267,7 @@ iot_error_t iot_bsp_fs_open(const char* filename, iot_bsp_fs_open_mode_t mode, i
 		IOT_DEBUG("nvs open failed [%s]", _get_error_string(ret));
 		return IOT_ERROR_FS_OPEN_FAIL;
 	}
+	
 }
 
 #if defined(CONFIG_STDK_IOT_CORE_SUPPORT_STNV_PARTITION)
@@ -186,6 +290,7 @@ iot_error_t iot_bsp_fs_open_from_stnv(const char* filename, iot_bsp_fs_handle_t*
 
 iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *length)
 {
+	
 	esp_err_t ret;
 	size_t required_size;
 
@@ -224,12 +329,9 @@ iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *le
 
 iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsigned int length)
 {
+	#if 0
 	printf("[Simulator] iot_bsp_fs_write: enter\n");
-	printf("[Simulator] iot_bsp_fs_write: data = %s\n",data);	
-
-	printf("[Simulator] iot_bsp_fs_write: handle.fd = %d ; handle.filename = %s\n",handle.fd,handle.filename);
-	
-	
+	printf("[Simulator] iot_bsp_fs_write: data = %s\n",data);
 	esp_err_t ret;
 
 	ret = nvs_set_str(handle.fd, handle.filename, data);
@@ -267,6 +369,9 @@ iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsig
 
 	return IOT_ERROR_NONE;
 
+	#endif
+	
+
 
 }
 
@@ -279,6 +384,8 @@ iot_error_t iot_bsp_fs_close(iot_bsp_fs_handle_t handle)
 
 iot_error_t iot_bsp_fs_remove(const char* filename)
 {
+
+
 	if (filename == NULL) {
 		return IOT_ERROR_INVALID_ARGS;
 	}
@@ -301,6 +408,103 @@ iot_error_t iot_bsp_fs_remove(const char* filename)
 	}
 
 	nvs_close(nvs_handle);
+}
 
+#else
+//no parameters are being passed
+iot_error_t iot_bsp_fs_init()
+{
+
+	memset(&fileSystem, 0, sizeof(HashTable));
+    return IOT_ERROR_NONE;
+}
+
+iot_error_t iot_bsp_fs_deinit()
+{
+/*#if defined(CONFIG_STDK_IOT_CORE_SUPPORT_STNV_PARTITION)
+	esp_err_t ret = nvs_flash_deinit_partition(STDK_NV_DATA_PARTITION);
+	IOT_WARN_CHECK(ret != ESP_OK, IOT_ERROR_DEINIT_FAIL, "nvs deinit failed [%s]", _get_error_string(ret));
+#endif*/
 	return IOT_ERROR_NONE;
 }
+
+iot_error_t iot_bsp_fs_open(const char* filename, iot_bsp_fs_open_mode_t mode, iot_bsp_fs_handle_t* handle)
+{
+	return IOT_ERROR_NONE;
+}
+
+iot_error_t iot_bsp_fs_open_from_stnv(const char* filename, iot_bsp_fs_handle_t* handle)
+{
+	/*nvs_handle nvs_handle;
+	nvs_open_mode nvs_open_mode = NVS_READONLY;
+
+	esp_err_t ret = nvs_open_from_partition(STDK_NV_DATA_PARTITION, STDK_NV_DATA_NAMESPACE, nvs_open_mode, &nvs_handle);
+	if (ret == ESP_OK) {
+		handle->fd = nvs_handle;
+		snprintf(handle->filename, sizeof(handle->filename), "%s", filename);
+		return IOT_ERROR_NONE;
+	} else {
+		IOT_DEBUG("nv open failed [%s]", _get_error_string(ret));
+		return IOT_ERROR_FS_OPEN_FAIL;
+	}*/
+    return IOT_ERROR_NONE;
+}
+
+iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *length)
+//iot_error_t iot_bsp_fs_read(HashTable* hashTable,char* buffer, const char* filename)
+{
+	//return getFileContent(&fileSystem->hashTable, filename);
+
+	// unsigned int index = hash(filename);
+    // while (strcmp(hashTable->files[index].filename, filename) != 0) {
+    //     index = (index + 1) % HASH_TABLE_SIZE;
+    //     if (hashTable->files[index].filename[0] == '\0') {
+    //         return NULL;  // File not found
+    //     }
+    // }
+
+    // size_t contentLength = strlen(hashTable->files[index].content);
+    // char* buffer = malloc((contentLength + 1) * sizeof(char));
+    // if (buffer != NULL) {
+    //     strncpy(buffer, hashTable->files[index].content, contentLength);
+    //     buffer[contentLength] = '\0';
+    // }
+	/* unsigned int index = hash(filename);
+   	 while (strcmp(hashTable->files[index].filename, filename) != 0) {
+        index = (index + 1) % HASH_TABLE_SIZE;
+        if (hashTable->files[index].filename[0] == '\0') {
+            buffer[0] = '\0';  // Set buffer to an empty string
+            return IOT_ERROR_FS_OPEN_FAIL;  // File not found
+        }*/
+        readFile(&fileSystem,handle.filename);
+
+		strncpy(buffer,buffer1,MAX_FILE_CONTENT_LENGTH);
+
+		*length = MAX_FILE_CONTENT_LENGTH;
+
+
+        return IOT_ERROR_NONE;
+}
+
+iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsigned int length)
+//iot_error_t iot_bsp_fs_write(FileSystem* fileSystem, const char* filename, const char* content)
+{
+
+	 insertFile(&fileSystem, handle.filename, data);
+	 return IOT_ERROR_NONE;
+
+}
+
+iot_error_t iot_bsp_fs_close(iot_bsp_fs_handle_t handle)
+{
+	return IOT_ERROR_NONE;
+}
+
+iot_error_t iot_bsp_fs_remove(const char* filename)
+//iot_error_t iot_bsp_fs_remove(FileSystem* fileSystem, const char* filename)
+{
+	deleteFile(&fileSystem, filename);
+	return IOT_ERROR_NONE;
+}
+
+#endif
