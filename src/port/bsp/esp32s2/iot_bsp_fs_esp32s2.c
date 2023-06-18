@@ -101,6 +101,7 @@ static iot_error_t _iot_bsp_fs_get_secure_config(nvs_sec_cfg_t *cfg)
 }
 #endif
 
+
 iot_error_t iot_bsp_fs_init()
 {
 	esp_err_t ret;
@@ -224,7 +225,11 @@ iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *le
 iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsigned int length)
 {
 	printf("[Simulator] iot_bsp_fs_write: enter\n");
-	printf("[Simulator] iot_bsp_fs_write: data = %s\n",data);
+	printf("[Simulator] iot_bsp_fs_write: data = %s\n",data);	
+
+	printf("[Simulator] iot_bsp_fs_write: handle.fd = %d ; handle.filename = %c\n",handle.fd,handle.filename);
+	
+	
 	esp_err_t ret;
 
 	ret = nvs_set_str(handle.fd, handle.filename, data);
