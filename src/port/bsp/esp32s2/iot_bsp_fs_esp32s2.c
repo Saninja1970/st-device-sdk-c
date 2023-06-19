@@ -343,8 +343,8 @@ iot_error_t iot_bsp_fs_remove(const char* filename)
 #else
 
 //*********************************************************************
-#define MAX_FILENAME_LENGTH 30
-#define MAX_FILE_CONTENT_LENGTH 30
+#define MAX_FILENAME_LENGTH 100
+#define MAX_FILE_CONTENT_LENGTH 100
 #define HASH_TABLE_SIZE 30
 //char buffer1[MAX_FILE_CONTENT_LENGTH]; 
 
