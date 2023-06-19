@@ -1711,6 +1711,8 @@ iot_error_t _iot_security_be_software_ecdh_compute_premaster_secret_ed25519(
 			iot_security_buffer_t *c_pubkey_buf,
 			iot_security_buffer_t *output_buf)
 {
+
+	printf("[Simulator] _iot_security_be_software_ecdh_compute_premaster_secret_ed25519: enter\n");
 	iot_error_t err;
 	mbedtls_ecdh_context mbed_ecdh;
 	mbedtls_ctr_drbg_context mbed_ctr_drbg;
@@ -1752,6 +1754,8 @@ iot_error_t _iot_security_be_software_ecdh_compute_premaster_secret_ed25519(
 	mbedtls_ctr_drbg_init(&mbed_ctr_drbg);
 	mbedtls_entropy_init(&mbed_entropy);
 
+	printf("[Simulator] _iot_security_be_software_ecdh_compute_premaster_secret_ed25519: mbedtls_ctr_drbg_seed\n");
+
 	ret = mbedtls_ctr_drbg_seed(&mbed_ctr_drbg, mbedtls_entropy_func, &mbed_entropy,
 								(const unsigned char *)pers, strlen(pers));
 	if (ret) {
@@ -1760,6 +1764,7 @@ iot_error_t _iot_security_be_software_ecdh_compute_premaster_secret_ed25519(
 		IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, err, __LINE__, 0);
 		goto exit;
 	}
+	printf("[Simulator] _iot_security_be_software_ecdh_compute_premaster_secret_ed25519: mbedtls_ecp_group_load\n");
 
 	ret = mbedtls_ecp_group_load(&mbed_ecdh.grp, mbed_ecp_grp_id);
 	if (ret) {
@@ -1768,6 +1773,8 @@ iot_error_t _iot_security_be_software_ecdh_compute_premaster_secret_ed25519(
 		IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, err, __LINE__, 0);
 		goto exit;
 	}
+
+	printf("[Simulator] _iot_security_be_software_ecdh_compute_premaster_secret_ed25519: software_swap_secret\n");
 
 	err = _iot_security_be_software_swap_secret(t_seckey_buf, &swap_buf);
 	if (err) {
@@ -1809,6 +1816,8 @@ iot_error_t _iot_security_be_software_ecdh_compute_premaster_secret_ed25519(
 		goto exit;
 	}
 
+	printf("[Simulator] _iot_security_be_software_ecdh_compute_premaster_secret_ed25519: mbedtls_ecdh_compute_shared\n");
+
 	ret = mbedtls_ecdh_compute_shared(&mbed_ecdh.grp, &mbed_ecdh.z, &mbed_ecdh.Qp, &mbed_ecdh.d, mbedtls_ctr_drbg_random, &mbed_ctr_drbg);
 	if (ret) {
 		IOT_ERROR("mbedtls_ecdh_compute_shared = -0x%04X", -ret);
@@ -1839,6 +1848,8 @@ exit:
 	mbedtls_ecdh_free(&mbed_ecdh);
 	mbedtls_ctr_drbg_free(&mbed_ctr_drbg);
 	mbedtls_entropy_free(&mbed_entropy);
+
+	printf("[Simulator] _iot_security_be_software_ecdh_compute_premaster_secret_ed25519: exit\n");
 
 	return err;
 }
@@ -2038,6 +2049,8 @@ iot_error_t _iot_security_be_software_ecdh_set_params(iot_security_context_t *co
 STATIC_FUNCTION
 iot_error_t _iot_security_be_software_ecdh_compute_shared_secret(iot_security_context_t *context, iot_security_buffer_t *output_buf)
 {
+
+	printf("[Simulator] _iot_security_be_software_ecdh_compute_shared_secret: enter\n");
 	iot_error_t err;
 	iot_security_ecdh_params_t *ecdh_params;
 	iot_security_buffer_t pmsecret_buf = { 0 };
@@ -2061,11 +2074,16 @@ iot_error_t _iot_security_be_software_ecdh_compute_shared_secret(iot_security_co
 		{
 			iot_security_buffer_t t_seckey_buf = { 0 };
 
+			printf("[Simulator] _iot_security_be_software_ecdh_compute_shared_secret: invoking secp2s6v1\n");
+
+
+
 			err = _iot_security_be_software_get_seckey_with_secp256v1(ecdh_params->key_id, &t_seckey_buf);
 			if (err) {
 				IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, err, __LINE__, 0);
 				goto exit;
 			}
+			printf("[Simulator] _iot_security_be_software_ecdh_compute_shared_secret: premaster_secret_ecdsa\n");
 
 			err = _iot_security_be_software_ecdh_compute_premaster_secret_ecdsa(&t_seckey_buf, &ecdh_params->c_pubkey, &pmsecret_buf);
 
@@ -2079,6 +2097,8 @@ iot_error_t _iot_security_be_software_ecdh_compute_shared_secret(iot_security_co
 		}
 		break;
 	default:
+		printf("[Simulator] _iot_security_be_software_ecdh_compute_shared_secret: premaster_secret_ed25519\n");
+
 		err = _iot_security_be_software_ecdh_compute_premaster_secret_ed25519(&ecdh_params->t_seckey, &ecdh_params->c_pubkey, &pmsecret_buf);
 		if (err) {
 			IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, err, __LINE__, 0);
@@ -2107,6 +2127,8 @@ iot_error_t _iot_security_be_software_ecdh_compute_shared_secret(iot_security_co
 		IOT_DUMP(IOT_DEBUG_LEVEL_ERROR, err, __LINE__, 0);
 		goto exit_free_secret;
 	}
+
+	printf("[Simulator] _iot_security_be_software_ecdh_compute_shared_secret: iot_security_sha256\n");
 
 	err = iot_security_sha256(secret_buf.p, secret_buf.len, shared_secret_buf.p, shared_secret_buf.len);
 	if (err) {
@@ -2137,6 +2159,8 @@ exit_free_secret:
 exit_free_pmsecret:
 	_iot_security_be_software_buffer_free(&pmsecret_buf);
 exit:
+
+	printf("[Simulator] _iot_security_be_software_ecdh_compute_shared_secret: exit\n");
 	return err;
 }
 

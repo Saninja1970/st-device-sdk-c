@@ -346,18 +346,19 @@ iot_error_t iot_bsp_fs_remove(const char* filename)
 #define MAX_FILENAME_LENGTH 100
 #define MAX_FILE_CONTENT_LENGTH 1000
 #define HASH_TABLE_SIZE 100
-char buffer1[MAX_FILE_CONTENT_LENGTH]; 
+//char buffer1[MAX_FILE_CONTENT_LENGTH]; 
 
 typedef struct {
     char filename[MAX_FILENAME_LENGTH];
     char content[MAX_FILE_CONTENT_LENGTH];
+	int content_length;
 } File;
 
 typedef struct {
     File files[HASH_TABLE_SIZE];
 } HashTable;
 
-HashTable *hashTable;
+HashTable hashTable;
 
 
 unsigned int hash(const char* filename) {
@@ -368,10 +369,12 @@ unsigned int hash(const char* filename) {
     return hash % HASH_TABLE_SIZE;
 }
 
-void insertFile(HashTable* hashTable, const char* filename, const char* content) {
+void insertFile(HashTable* hashTable, const char* filename, const char* content,int length) {
     unsigned int index = hash(filename);
+
     strncpy(hashTable->files[index].filename, filename, MAX_FILENAME_LENGTH);
-    strncpy(hashTable->files[index].content, content, MAX_FILE_CONTENT_LENGTH);
+    memcpy(hashTable->files[index].content, content, length);
+	hashTable->files[index].content_length = length;
 }
 
 // const char* getFileContent(HashTable* hashTable, const char* filename) {
@@ -385,25 +388,32 @@ void insertFile(HashTable* hashTable, const char* filename, const char* content)
 //     return hashTable->files[index].content;
 // }
 
-void readFile(HashTable* hashTable, const char* filename) {
+void readFile(HashTable* hashTable, const char* filename,char *value,int *length) {
     unsigned int index = hash(filename);
+
     while (strcmp(hashTable->files[index].filename, filename) != 0) {
         index = (index + 1) % HASH_TABLE_SIZE;
         if (hashTable->files[index].filename[0] == '\0') {
-            buffer1[0] = '\0';  // Set buffer to an empty string
+            value[0] = '\0';  // Set buffer to an empty string
             return;  // File not found
         }
     }
 
-    strncpy(buffer1, hashTable->files[index].content, MAX_FILE_CONTENT_LENGTH);
-    buffer1[MAX_FILE_CONTENT_LENGTH - 1] = '\0';  // Ensure buffer is null-terminated
+	
+
+    memcpy(value, hashTable->files[index].content, hashTable->files[index].content_length);
+	
+    value[hashTable->files[index].content_length] = '\0';  // Ensure buffer is null-terminated
+	*length = hashTable->files[index].content_length;
+
+
 }
 void deleteFile(HashTable* hashTable, const char* filename) {
     unsigned int index = hash(filename);
     while (strcmp(hashTable->files[index].filename, filename) != 0) {
         index = (index + 1) % HASH_TABLE_SIZE;
         if (hashTable->files[index].filename[0] == '\0') {
-            return;  // File not found
+            return; 
         }
     }
     hashTable->files[index].filename[0] = '\0';  // Mark the slot as empty
@@ -419,13 +429,16 @@ void deleteFile(HashTable* hashTable, const char* filename) {
 //no parameters are being passed
 iot_error_t iot_bsp_fs_init()
 {
+	printf("[Simulator] iot_bsp_fs_init:enter\n");
 
-	memset(hashTable, 0, sizeof(HashTable));
+	memset(&hashTable, 0, sizeof(HashTable));
     return IOT_ERROR_NONE;
 }
 
 iot_error_t iot_bsp_fs_open(const char* filename, iot_bsp_fs_open_mode_t mode, iot_bsp_fs_handle_t* handle)
 {
+
+	printf("[Simulator] iot_bsp_fs_open:filename = %s\n",filename);
 	return IOT_ERROR_NONE;
 }
 
@@ -472,11 +485,7 @@ iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *le
             buffer[0] = '\0';  // Set buffer to an empty string
             return IOT_ERROR_FS_OPEN_FAIL;  // File not found
         }*/
-        readFile(hashTable,handle.filename);
-
-		strncpy(buffer,buffer1,MAX_FILE_CONTENT_LENGTH);
-
-		*length = MAX_FILE_CONTENT_LENGTH;
+        readFile(&hashTable,handle.filename,buffer,length);
 
 
         return IOT_ERROR_NONE;
@@ -486,7 +495,7 @@ iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsig
 //iot_error_t iot_bsp_fs_write(FileSystem* fileSystem, const char* filename, const char* content)
 {
 
-	 insertFile(hashTable, handle.filename, data);
+	 insertFile(hashTable, handle.filename, data,length);
 	 return IOT_ERROR_NONE;
 
 }
