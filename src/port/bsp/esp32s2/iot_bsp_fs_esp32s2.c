@@ -431,6 +431,8 @@ iot_error_t iot_bsp_fs_init()
 {
 	printf("[Simulator] iot_bsp_fs_init:enter\n");
 
+	esp_err_t ret;
+
 	ret = nvs_flash_init();
 	IOT_WARN_CHECK(ret != ESP_OK, IOT_ERROR_INIT_FAIL, "%s init failed [%s]", NVS_DEFAULT_PART_NAME, _get_error_string(ret));
 
