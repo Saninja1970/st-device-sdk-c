@@ -422,15 +422,6 @@ iot_error_t iot_bsp_fs_init()
     return IOT_ERROR_NONE;
 }
 
-iot_error_t iot_bsp_fs_deinit()
-{
-/*#if defined(CONFIG_STDK_IOT_CORE_SUPPORT_STNV_PARTITION)
-	esp_err_t ret = nvs_flash_deinit_partition(STDK_NV_DATA_PARTITION);
-	IOT_WARN_CHECK(ret != ESP_OK, IOT_ERROR_DEINIT_FAIL, "nvs deinit failed [%s]", _get_error_string(ret));
-#endif*/
-	return IOT_ERROR_NONE;
-}
-
 iot_error_t iot_bsp_fs_open(const char* filename, iot_bsp_fs_open_mode_t mode, iot_bsp_fs_handle_t* handle)
 {
 	return IOT_ERROR_NONE;
