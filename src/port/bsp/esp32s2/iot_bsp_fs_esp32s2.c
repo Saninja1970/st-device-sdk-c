@@ -391,7 +391,7 @@ void insertFile(HashTable* hashTable, const char* filename, const char* content,
 void readFile(HashTable* hashTable, const char* filename,char *value,size_t *length) {
     unsigned int index = hash(filename);
 
-	printf("[Simulator] readFile: index = %ld\n",index);
+	printf("[Simulator] readFile: index = %d\n",index);
 
     while (strcmp(hashTable->files[index].filename, filename) != 0) {
         index = (index + 1) % HASH_TABLE_SIZE;
@@ -496,7 +496,7 @@ iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *le
 
 		printf("[Simulator] iot_bsp_fs_read: buffer = %s\n",buffer);
 		printf("[Simulator] iot_bsp_fs_read: handle.filename = %s\n",handle.filename);
-		printf("[Simulator] iot_bsp_fs_read: length = %ld\n",length);
+		printf("[Simulator] iot_bsp_fs_read: length = %n\n",length);
 
 
         return IOT_ERROR_NONE;
@@ -508,7 +508,7 @@ iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsig
 
 	printf("[Simulator] iot_bsp_fs_write: data = %s\n",data);
 	printf("[Simulator] iot_bsp_fs_write: handle.filename = %s\n",handle.filename);
-	printf("[Simulator] iot_bsp_fs_write: length = %ld\n",length);
+	printf("[Simulator] iot_bsp_fs_write: length = %d\n",length);
 
 
 
