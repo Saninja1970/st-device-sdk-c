@@ -45,6 +45,9 @@ typedef struct {
     File files[HASH_TABLE_SIZE];
 } HashTable;
 
+HashTable *hashTable;
+
+
 unsigned int hash(const char* filename) {
     unsigned int hash = 0;
     for (int i = 0; filename[i] != '\0'; i++) {
@@ -94,11 +97,11 @@ void deleteFile(HashTable* hashTable, const char* filename) {
     hashTable->files[index].filename[0] = '\0';  // Mark the slot as empty
 }
 
-typedef struct {
-    HashTable hashTable;
+/*typedef struct {
+    HashTable* hashTable;
 } FileSystem;
-
-FileSystem fileSystem;
+*/
+//FileSystem fileSystem;
 
 //88888888888888888888888888888888888888888888888888888888888888
 
@@ -121,7 +124,7 @@ FileSystem fileSystem;
 
 
 
-#if 0
+
 
 static const char* _get_error_string(esp_err_t err) {
 
@@ -194,7 +197,7 @@ static iot_error_t _iot_bsp_fs_get_secure_config(nvs_sec_cfg_t *cfg)
 	return IOT_ERROR_NONE;
 }
 #endif
-#endif
+
 
 
 #if 0
@@ -415,7 +418,7 @@ iot_error_t iot_bsp_fs_remove(const char* filename)
 iot_error_t iot_bsp_fs_init()
 {
 
-	memset(&fileSystem, 0, sizeof(HashTable));
+	//memset(&fileSystem, 0, sizeof(HashTable));
     return IOT_ERROR_NONE;
 }
 
@@ -476,7 +479,7 @@ iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *le
             buffer[0] = '\0';  // Set buffer to an empty string
             return IOT_ERROR_FS_OPEN_FAIL;  // File not found
         }*/
-        readFile(&fileSystem,handle.filename);
+        readFile(hashTable,handle.filename);
 
 		strncpy(buffer,buffer1,MAX_FILE_CONTENT_LENGTH);
 
@@ -490,7 +493,7 @@ iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsig
 //iot_error_t iot_bsp_fs_write(FileSystem* fileSystem, const char* filename, const char* content)
 {
 
-	 insertFile(&fileSystem, handle.filename, data);
+	 insertFile(hashTable, handle.filename, data);
 	 return IOT_ERROR_NONE;
 
 }
@@ -503,7 +506,16 @@ iot_error_t iot_bsp_fs_close(iot_bsp_fs_handle_t handle)
 iot_error_t iot_bsp_fs_remove(const char* filename)
 //iot_error_t iot_bsp_fs_remove(FileSystem* fileSystem, const char* filename)
 {
-	deleteFile(&fileSystem, filename);
+	deleteFile(hashTable, filename);
+	return IOT_ERROR_NONE;
+}
+
+iot_error_t iot_bsp_fs_deinit()
+{
+#if defined(CONFIG_STDK_IOT_CORE_SUPPORT_STNV_PARTITION)
+	esp_err_t ret = nvs_flash_deinit_partition(STDK_NV_DATA_PARTITION);
+	IOT_WARN_CHECK(ret != ESP_OK, IOT_ERROR_DEINIT_FAIL, "nvs deinit failed [%s]", _get_error_string(ret));
+#endif
 	return IOT_ERROR_NONE;
 }
 
