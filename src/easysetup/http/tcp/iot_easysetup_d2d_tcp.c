@@ -554,6 +554,8 @@ iot_error_t _es_keyinfo_handler(struct iot_context *ctx, char *input_data, char 
 		goto exit_ecdh_deinit;
 	}
 
+	printf("[Simulator] _es_keyinfo_handler: computing shared key\n");
+
 	err = iot_security_ecdh_compute_shared_secret(ctx->easysetup_security_context, &secret_buf);
 	if (err) {
 		IOT_ERROR("master secret generation failed %d", err);
@@ -581,6 +583,8 @@ iot_error_t _es_keyinfo_handler(struct iot_context *ctx, char *input_data, char 
 		goto exit_secret;
 	}
 	memset(decode_buf, 0, output_len);
+
+	printf("[Simulator] _es_keyinfo_handler : decoding urlsafe\n");
 
 	err = iot_security_base64_decode_urlsafe((unsigned char *) p_datetime_str, input_len,
 					decode_buf, output_len,
@@ -1569,6 +1573,8 @@ out:
 
 iot_error_t iot_easysetup_request_handler(struct iot_context *ctx, struct iot_easysetup_payload request)
 {
+
+	printf("[Simulator] iot_easysetup_request_handler : %d\n",request.step);
 	iot_error_t err = IOT_ERROR_NONE;
 	struct iot_easysetup_payload response;
 
