@@ -351,7 +351,7 @@ iot_error_t iot_bsp_fs_remove(const char* filename)
 typedef struct {
     char filename[MAX_FILENAME_LENGTH];
     char content[MAX_FILE_CONTENT_LENGTH];
-	int content_length;
+	unsigned int content_length;
 } File;
 
 typedef struct {
@@ -369,7 +369,7 @@ unsigned int hash(const char* filename) {
     return hash % HASH_TABLE_SIZE;
 }
 
-void insertFile(HashTable* hashTable, const char* filename, const char* content,int length) {
+void insertFile(HashTable* hashTable, const char* filename, const char* content,unsigned int length) {
     unsigned int index = hash(filename);
 
     strncpy(hashTable->files[index].filename, filename, MAX_FILENAME_LENGTH);
@@ -388,7 +388,7 @@ void insertFile(HashTable* hashTable, const char* filename, const char* content,
 //     return hashTable->files[index].content;
 // }
 
-void readFile(HashTable* hashTable, const char* filename,char *value,int *length) {
+void readFile(HashTable* hashTable, const char* filename,char *value,size_t *length) {
     unsigned int index = hash(filename);
 
     while (strcmp(hashTable->files[index].filename, filename) != 0) {
