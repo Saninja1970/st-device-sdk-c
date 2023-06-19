@@ -485,7 +485,7 @@ iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *le
             buffer[0] = '\0';  // Set buffer to an empty string
             return IOT_ERROR_FS_OPEN_FAIL;  // File not found
         }*/
-        readFile(&hashTable,handle.filename,buffer,*length);
+        readFile(&hashTable,handle.filename,buffer,length);
 
 
         return IOT_ERROR_NONE;
