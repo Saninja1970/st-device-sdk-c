@@ -391,6 +391,8 @@ void insertFile(HashTable* hashTable, const char* filename, const char* content,
 void readFile(HashTable* hashTable, const char* filename,char *value,size_t *length) {
     unsigned int index = hash(filename);
 
+	printf("[Simulator] readFile: enter\n");
+
 	printf("[Simulator] readFile: index = %d\n",index);
 
     while (strcmp(hashTable->files[index].filename, filename) != 0) {
@@ -404,9 +406,13 @@ void readFile(HashTable* hashTable, const char* filename,char *value,size_t *len
 	
 
     memcpy(value, hashTable->files[index].content, hashTable->files[index].content_length);
+
+	printf("[Simulator] readFile:value = %s\n",value);
 	
     value[hashTable->files[index].content_length] = '\0';  // Ensure buffer is null-terminated
 	*length = hashTable->files[index].content_length;
+
+	printf("[Simulator] readFile:length = %n\n",length);
 
 
 }
