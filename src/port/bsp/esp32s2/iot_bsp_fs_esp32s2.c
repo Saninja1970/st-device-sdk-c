@@ -30,80 +30,7 @@
 #define STDK_NV_DATA_NAMESPACE "stdk"
 
 
-//*********************************************************************
-#define MAX_FILENAME_LENGTH 100
-#define MAX_FILE_CONTENT_LENGTH 1000
-#define HASH_TABLE_SIZE 100
-char buffer1[MAX_FILE_CONTENT_LENGTH]; 
 
-typedef struct {
-    char filename[MAX_FILENAME_LENGTH];
-    char content[MAX_FILE_CONTENT_LENGTH];
-} File;
-
-typedef struct {
-    File files[HASH_TABLE_SIZE];
-} HashTable;
-
-HashTable *hashTable;
-
-
-unsigned int hash(const char* filename) {
-    unsigned int hash = 0;
-    for (int i = 0; filename[i] != '\0'; i++) {
-        hash = hash * 31 + filename[i];
-    }
-    return hash % HASH_TABLE_SIZE;
-}
-
-void insertFile(HashTable* hashTable, const char* filename, const char* content) {
-    unsigned int index = hash(filename);
-    strncpy(hashTable->files[index].filename, filename, MAX_FILENAME_LENGTH);
-    strncpy(hashTable->files[index].content, content, MAX_FILE_CONTENT_LENGTH);
-}
-
-// const char* getFileContent(HashTable* hashTable, const char* filename) {
-//     unsigned int index = hash(filename);
-//     while (strcmp(hashTable->files[index].filename, filename) != 0) {
-//         index = (index + 1) % HASH_TABLE_SIZE;
-//         if (hashTable->files[index].filename[0] == '\0') {
-//             return NULL;  // File not found
-//         }
-//     }
-//     return hashTable->files[index].content;
-// }
-
-void readFile(HashTable* hashTable, const char* filename) {
-    unsigned int index = hash(filename);
-    while (strcmp(hashTable->files[index].filename, filename) != 0) {
-        index = (index + 1) % HASH_TABLE_SIZE;
-        if (hashTable->files[index].filename[0] == '\0') {
-            buffer1[0] = '\0';  // Set buffer to an empty string
-            return;  // File not found
-        }
-    }
-
-    strncpy(buffer1, hashTable->files[index].content, MAX_FILE_CONTENT_LENGTH);
-    buffer1[MAX_FILE_CONTENT_LENGTH - 1] = '\0';  // Ensure buffer is null-terminated
-}
-void deleteFile(HashTable* hashTable, const char* filename) {
-    unsigned int index = hash(filename);
-    while (strcmp(hashTable->files[index].filename, filename) != 0) {
-        index = (index + 1) % HASH_TABLE_SIZE;
-        if (hashTable->files[index].filename[0] == '\0') {
-            return;  // File not found
-        }
-    }
-    hashTable->files[index].filename[0] = '\0';  // Mark the slot as empty
-}
-
-/*typedef struct {
-    HashTable* hashTable;
-} FileSystem;
-*/
-//FileSystem fileSystem;
-
-//88888888888888888888888888888888888888888888888888888888888888
 
 
 
@@ -414,11 +341,86 @@ iot_error_t iot_bsp_fs_remove(const char* filename)
 }
 
 #else
+
+//*********************************************************************
+#define MAX_FILENAME_LENGTH 100
+#define MAX_FILE_CONTENT_LENGTH 1000
+#define HASH_TABLE_SIZE 100
+char buffer1[MAX_FILE_CONTENT_LENGTH]; 
+
+typedef struct {
+    char filename[MAX_FILENAME_LENGTH];
+    char content[MAX_FILE_CONTENT_LENGTH];
+} File;
+
+typedef struct {
+    File files[HASH_TABLE_SIZE];
+} HashTable;
+
+HashTable *hashTable;
+
+
+unsigned int hash(const char* filename) {
+    unsigned int hash = 0;
+    for (int i = 0; filename[i] != '\0'; i++) {
+        hash = hash * 31 + filename[i];
+    }
+    return hash % HASH_TABLE_SIZE;
+}
+
+void insertFile(HashTable* hashTable, const char* filename, const char* content) {
+    unsigned int index = hash(filename);
+    strncpy(hashTable->files[index].filename, filename, MAX_FILENAME_LENGTH);
+    strncpy(hashTable->files[index].content, content, MAX_FILE_CONTENT_LENGTH);
+}
+
+// const char* getFileContent(HashTable* hashTable, const char* filename) {
+//     unsigned int index = hash(filename);
+//     while (strcmp(hashTable->files[index].filename, filename) != 0) {
+//         index = (index + 1) % HASH_TABLE_SIZE;
+//         if (hashTable->files[index].filename[0] == '\0') {
+//             return NULL;  // File not found
+//         }
+//     }
+//     return hashTable->files[index].content;
+// }
+
+void readFile(HashTable* hashTable, const char* filename) {
+    unsigned int index = hash(filename);
+    while (strcmp(hashTable->files[index].filename, filename) != 0) {
+        index = (index + 1) % HASH_TABLE_SIZE;
+        if (hashTable->files[index].filename[0] == '\0') {
+            buffer1[0] = '\0';  // Set buffer to an empty string
+            return;  // File not found
+        }
+    }
+
+    strncpy(buffer1, hashTable->files[index].content, MAX_FILE_CONTENT_LENGTH);
+    buffer1[MAX_FILE_CONTENT_LENGTH - 1] = '\0';  // Ensure buffer is null-terminated
+}
+void deleteFile(HashTable* hashTable, const char* filename) {
+    unsigned int index = hash(filename);
+    while (strcmp(hashTable->files[index].filename, filename) != 0) {
+        index = (index + 1) % HASH_TABLE_SIZE;
+        if (hashTable->files[index].filename[0] == '\0') {
+            return;  // File not found
+        }
+    }
+    hashTable->files[index].filename[0] = '\0';  // Mark the slot as empty
+}
+
+/*typedef struct {
+    HashTable* hashTable;
+} FileSystem;
+*/
+//FileSystem fileSystem;
+
+//88888888888888888888888888888888888888888888888888888888888888
 //no parameters are being passed
 iot_error_t iot_bsp_fs_init()
 {
 
-	//memset(&fileSystem, 0, sizeof(HashTable));
+	memset(hashTable, 0, sizeof(HashTable));
     return IOT_ERROR_NONE;
 }
 
