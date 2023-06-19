@@ -447,7 +447,7 @@ iot_error_t iot_bsp_fs_open(const char* filename, iot_bsp_fs_open_mode_t mode, i
 
 	printf("[Simulator] iot_bsp_fs_open:filename = %s\n",filename);
 	snprintf(handle->filename, sizeof(handle->filename), "%s", filename);
-	printf("[Simulator] iot_bsp_fs_open:handle.filename = %s\n",handle.filename);
+	printf("[Simulator] iot_bsp_fs_open:handle->filename = %s\n",handle->filename);
 	return IOT_ERROR_NONE;
 }
 
