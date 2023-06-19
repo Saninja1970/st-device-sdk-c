@@ -492,6 +492,8 @@ iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *le
         }*/
         readFile(&hashTable,handle.filename,buffer,length);
 
+		printf("[Simulator] iot_bsp_fs_read: Data = %s\n",buffer);
+
 
         return IOT_ERROR_NONE;
 }
