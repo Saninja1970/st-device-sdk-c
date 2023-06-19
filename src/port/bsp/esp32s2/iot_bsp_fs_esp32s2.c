@@ -485,7 +485,7 @@ iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *le
             buffer[0] = '\0';  // Set buffer to an empty string
             return IOT_ERROR_FS_OPEN_FAIL;  // File not found
         }*/
-        readFile(&hashTable,handle.filename,buffer,length);
+        readFile(&hashTable,handle.filename,buffer,*length);
 
 
         return IOT_ERROR_NONE;
@@ -495,7 +495,7 @@ iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsig
 //iot_error_t iot_bsp_fs_write(FileSystem* fileSystem, const char* filename, const char* content)
 {
 
-	 insertFile(hashTable, handle.filename, data,length);
+	 insertFile(&hashTable, handle.filename, data,length);
 	 return IOT_ERROR_NONE;
 
 }
@@ -508,7 +508,7 @@ iot_error_t iot_bsp_fs_close(iot_bsp_fs_handle_t handle)
 iot_error_t iot_bsp_fs_remove(const char* filename)
 //iot_error_t iot_bsp_fs_remove(FileSystem* fileSystem, const char* filename)
 {
-	deleteFile(hashTable, filename);
+	deleteFile(&hashTable, filename);
 	return IOT_ERROR_NONE;
 }
 
