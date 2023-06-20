@@ -1,4 +1,4 @@
-	/* ***************************************************************************
+/* ***************************************************************************
  *
  * Copyright 2019-2020 Samsung Electronics All Rights Reserved.
  *
@@ -28,8 +28,6 @@
 
 #define STDK_NV_DATA_PARTITION "stnv"
 #define STDK_NV_DATA_NAMESPACE "stdk"
-
-
 
 static const char* _get_error_string(esp_err_t err) {
 
@@ -321,100 +319,122 @@ iot_error_t iot_bsp_fs_remove(const char* filename)
 #else
 
 //*********************************************************************
-#define SIZE 30
+#define MAX_FILENAME_LENGTH 100
+#define MAX_FILE_CONTENT_LENGTH 100
+#define HASH_TABLE_SIZE 30
+//char buffer1[MAX_FILE_CONTENT_LENGTH]; 
 
 typedef struct {
-    char file_name[30];
-    char content[100];
-    unsigned int len;
-} file;
+    char filename[MAX_FILENAME_LENGTH];
+    char content[MAX_FILE_CONTENT_LENGTH];
+	unsigned int content_length;
+} File;
 
-file FILEE[SIZE];
+typedef struct {
+    File files[HASH_TABLE_SIZE];
+} HashTable;
+
+HashTable hashTable;
 
 
-////////////
-
-void file_init(file *FILEE)
-{
-    for (int i = 0; i < SIZE; i++) 
-    {
-        strcpy(FILEE[i].file_name, "NULL");
-        strcpy(FILEE[i].content, "NULL");
+unsigned int hash(const char* filename) {
+    unsigned int hash = 0;
+    for (int i = 0; filename[i] != '\0'; i++) {
+        hash = hash * 99 + filename[i];
     }
+    return hash % HASH_TABLE_SIZE;
 }
 
-void write_file(char* name, char* cont, unsigned int length) 
-{
-    int i=0;
-    for (i = 0; i < SIZE; i++) 
-    {
-        if (strcmp(FILEE[i].file_name, "NULL") == 0) {
-            strcpy(FILEE[i].file_name, name);
-            strcpy(FILEE[i].content, cont);
-            FILEE[i].len = length;
-			printf("[Simulator] write_file:content_length = %d\n",FILEE[i].len);
-			printf("[Simulator] write_file:filename = %s\n",FILEE[i].file_name);
-			printf("[Simulator] write_file:content = %s\n",FILEE[i].content);
-            return;
+void insertFile(HashTable* hashTable, const char* filename, const char* content,unsigned int length) {
+    unsigned int index = hash(filename);
+
+	printf("[Simulator] insertFile: enter\n");
+
+	printf("[Simulator] insertFile: index = %d\n",index);
+
+    strncpy(hashTable->files[index].filename, filename, MAX_FILENAME_LENGTH);
+    memcpy(hashTable->files[index].content, content, length);
+	hashTable->files[index].content_length = length;
+
+	printf("[Simulator] insertFile:content_length = %d\n",hashTable->files[index].content_length);
+	printf("[Simulator] insertFile:filename = %s\n",hashTable->files[index].filename);
+	printf("[Simulator] insertFile:content = %s\n",hashTable->files[index].content);
+
+
+
+	
+
+
+}
+
+// const char* getFileContent(HashTable* hashTable, const char* filename) {
+//     unsigned int index = hash(filename);
+//     while (strcmp(hashTable->files[index].filename, filename) != 0) {
+//         index = (index + 1) % HASH_TABLE_SIZE;
+//         if (hashTable->files[index].filename[0] == '\0') {
+//             return NULL;  // File not found
+//         }
+//     }
+//     return hashTable->files[index].content;
+// }
+
+void readFile(HashTable* hashTable, const char* filename,char *value,size_t *length) {
+    unsigned int index = hash(filename);
+
+	printf("[Simulator] readFile: enter\n");
+
+	printf("[Simulator] readFile: index = %d\n",index);
+
+    while (strcmp(hashTable->files[index].filename, filename) != 0) {
+        index = (index + 1) % HASH_TABLE_SIZE;
+        if (hashTable->files[index].filename[0] == '\0') {
+            value[0] = '\0';  // Set buffer to an empty string
+            return;  // File not found
         }
     }
 
-    printf("\nFiles are full :(\n");
-}
+	
 
-void read_file(char* name, char* buffer, unsigned int* length) 
-{
-    for (int i = 0; i < SIZE; i++) 
-    {
-        
-        
-        if (strcmp(FILEE[i].file_name, name) == 0) 
-        {
-            memcpy(buffer, FILEE[i].content, FILEE[i].len);
-            *length = FILEE[i].len;
-            return;
+    memcpy(value, hashTable->files[index].content, hashTable->files[index].content_length);
+
+	printf("[Simulator] readFile:value = %s\n",value);
+	
+    value[hashTable->files[index].content_length] = '\0';  // Ensure buffer is null-terminated
+	*length = hashTable->files[index].content_length;
+
+	printf("[Simulator] readFile:length = %n\n",length);
+
+
+}
+void deleteFile(HashTable* hashTable, const char* filename) {
+    unsigned int index = hash(filename);
+    while (strcmp(hashTable->files[index].filename, filename) != 0) {
+        index = (index + 1) % HASH_TABLE_SIZE;
+        if (hashTable->files[index].filename[0] == '\0') {
+            return; 
         }
     }
-    
-    printf("File not found.");
+    hashTable->files[index].filename[0] = '\0';  // Mark the slot as empty
 }
 
-void empty_file(char* name)
-{   
-    int i=0;
-    for(i=0;i<SIZE;i++)
-    {
-        if(strcmp(FILEE[i].file_name , name) != 0)
-        {
-            continue;
-        }
-        else
-        {
-            if(strcmp(FILEE[i].file_name , "NULL") == 0)
-            {
-                return;
-            }
-            else
-            {
-                strcpy(FILEE[i].file_name , "NULL");
-                strcpy(FILEE[i].content , "NULL");
-            }
-        }
-    }
-    
-}
-//////////////
+/*typedef struct {
+    HashTable* hashTable;
+} FileSystem;
+*/
+//FileSystem fileSystem;
 
-
+//88888888888888888888888888888888888888888888888888888888888888
+//no parameters are being passed
 iot_error_t iot_bsp_fs_init()
 {
 	printf("[Simulator] iot_bsp_fs_init:enter\n");
-    file_init(FILEE);
+
 	esp_err_t ret;
 
 	ret = nvs_flash_init();
-	//IOT_WARN_CHECK(ret != ESP_OK, IOT_ERROR_INIT_FAIL, "%s init failed [%s]", NVS_DEFAULT_PART_NAME, _get_error_string(ret));
+	IOT_WARN_CHECK(ret != ESP_OK, IOT_ERROR_INIT_FAIL, "%s init failed [%s]", NVS_DEFAULT_PART_NAME, _get_error_string(ret));
 
+	memset(&hashTable, 0, sizeof(HashTable));
     return IOT_ERROR_NONE;
 }
 
@@ -424,7 +444,6 @@ iot_error_t iot_bsp_fs_open(const char* filename, iot_bsp_fs_open_mode_t mode, i
 	printf("[Simulator] iot_bsp_fs_open:filename = %s\n",filename);
 	snprintf(handle->filename, sizeof(handle->filename), "%s", filename);
 	printf("[Simulator] iot_bsp_fs_open:handle->filename = %s\n",handle->filename);
-
 	return IOT_ERROR_NONE;
 }
 
@@ -448,16 +467,50 @@ iot_error_t iot_bsp_fs_open_from_stnv(const char* filename, iot_bsp_fs_handle_t*
 iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *length)
 //iot_error_t iot_bsp_fs_read(HashTable* hashTable,char* buffer, const char* filename)
 {
-	read_file(handle.filename,buffer,&length); 
+	//return getFileContent(&fileSystem->hashTable, filename);
 
-    return IOT_ERROR_NONE;
+	// unsigned int index = hash(filename);
+    // while (strcmp(hashTable->files[index].filename, filename) != 0) {
+    //     index = (index + 1) % HASH_TABLE_SIZE;
+    //     if (hashTable->files[index].filename[0] == '\0') {
+    //         return NULL;  // File not found
+    //     }
+    // }
+
+    // size_t contentLength = strlen(hashTable->files[index].content);
+    // char* buffer = malloc((contentLength + 1) * sizeof(char));
+    // if (buffer != NULL) {
+    //     strncpy(buffer, hashTable->files[index].content, contentLength);
+    //     buffer[contentLength] = '\0';
+    // }
+	/* unsigned int index = hash(filename);
+   	 while (strcmp(hashTable->files[index].filename, filename) != 0) {
+        index = (index + 1) % HASH_TABLE_SIZE;
+        if (hashTable->files[index].filename[0] == '\0') {
+            buffer[0] = '\0';  // Set buffer to an empty string
+            return IOT_ERROR_FS_OPEN_FAIL;  // File not found
+        }*/
+        readFile(&hashTable,handle.filename,buffer,length);
+
+		printf("[Simulator] iot_bsp_fs_read: buffer = %s\n",buffer);
+		printf("[Simulator] iot_bsp_fs_read: handle.filename = %s\n",handle.filename);
+		printf("[Simulator] iot_bsp_fs_read: length = %n\n",length);
+
+
+        return IOT_ERROR_NONE;
 }
 
 iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsigned int length)
 //iot_error_t iot_bsp_fs_write(FileSystem* fileSystem, const char* filename, const char* content)
 {
 
-     write_file(handle.filename, data,length-1); 
+	printf("[Simulator] iot_bsp_fs_write: data = %s\n",data);
+	printf("[Simulator] iot_bsp_fs_write: handle.filename = %s\n",handle.filename);
+	printf("[Simulator] iot_bsp_fs_write: length = %d\n",length);
+
+
+
+	 insertFile(&hashTable, handle.filename, data,length);
 	 return IOT_ERROR_NONE;
 
 }
@@ -470,8 +523,7 @@ iot_error_t iot_bsp_fs_close(iot_bsp_fs_handle_t handle)
 iot_error_t iot_bsp_fs_remove(const char* filename)
 //iot_error_t iot_bsp_fs_remove(FileSystem* fileSystem, const char* filename)
 {
-	
-    empty_file(filename);
+	deleteFile(&hashTable, filename);
 	return IOT_ERROR_NONE;
 }
 
@@ -484,4 +536,4 @@ iot_error_t iot_bsp_fs_deinit()
 	return IOT_ERROR_NONE;
 }
 
-#endif  
+#endif
