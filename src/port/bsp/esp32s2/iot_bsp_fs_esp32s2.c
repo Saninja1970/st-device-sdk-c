@@ -344,7 +344,7 @@ void file_init(file *FILEE)
     }
 }
 
-iot_error_t write_file(char* name, char* cont, unsigned int length) 
+iot_error_t write_file(char* name, const char* cont, unsigned int length) 
 {
     int i=0;
 	int j=-1;
@@ -379,7 +379,7 @@ iot_error_t write_file(char* name, char* cont, unsigned int length)
     return IOT_ERROR_NONE;
 }
 
-iot_error_t read_file(char* name, char* buffer, unsigned int* length) 
+iot_error_t read_file(char* name, char* buffer, size_t* length) 
 {
 
 	printf("[Simulator] read_file: name = %s\n",name);
@@ -403,7 +403,7 @@ iot_error_t read_file(char* name, char* buffer, unsigned int* length)
 	return IOT_ERROR_FS_NO_FILE;
 }
 
-iot_error_t empty_file(char* name)
+iot_error_t empty_file(const char* name)
 {   
     int i=0;
     for(i=0;i<SIZE;i++)
