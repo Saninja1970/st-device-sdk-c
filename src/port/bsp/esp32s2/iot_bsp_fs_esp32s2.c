@@ -372,9 +372,23 @@ unsigned int hash(const char* filename) {
 void insertFile(HashTable* hashTable, const char* filename, const char* content,unsigned int length) {
     unsigned int index = hash(filename);
 
+	printf("[Simulator] insertFile: enter\n");
+
+	printf("[Simulator] insertFile: index = %d\n",index);
+
     strncpy(hashTable->files[index].filename, filename, MAX_FILENAME_LENGTH);
     memcpy(hashTable->files[index].content, content, length);
 	hashTable->files[index].content_length = length;
+
+	printf("[Simulator] insertFile:content_length = %d\n",hashTable->files[index].content_length);
+	printf("[Simulator] insertFile:filename = %s\n",hashTable->files[index].filename);
+	printf("[Simulator] insertFile:content = %s\n",hashTable->files[index].content);
+
+
+
+	
+
+
 }
 
 // const char* getFileContent(HashTable* hashTable, const char* filename) {
