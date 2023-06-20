@@ -352,6 +352,9 @@ void write_file(char* name, char* cont, unsigned int length)
             strcpy(FILEE[i].file_name, name);
             strcpy(FILEE[i].content, cont);
             FILEE[i].len = length;
+			printf("[Simulator] write_file:content_length = %d\n",FILEE[i].len);
+			printf("[Simulator] write_file:filename = %s\n",FILEE[i].file_name);
+			printf("[Simulator] write_file:content = %s\n",FILEE[i].content);
             return;
         }
     }
@@ -421,7 +424,7 @@ iot_error_t iot_bsp_fs_open(const char* filename, iot_bsp_fs_open_mode_t mode, i
 	printf("[Simulator] iot_bsp_fs_open:filename = %s\n",filename);
 	snprintf(handle->filename, sizeof(handle->filename), "%s", filename);
 	printf("[Simulator] iot_bsp_fs_open:handle->filename = %s\n",handle->filename);
-	
+
 	return IOT_ERROR_NONE;
 }
 
@@ -454,7 +457,7 @@ iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsig
 //iot_error_t iot_bsp_fs_write(FileSystem* fileSystem, const char* filename, const char* content)
 {
 
-     write_file(handle.filename, data,&length); 
+     write_file(handle.filename, data,length-1); 
 	 return IOT_ERROR_NONE;
 
 }
