@@ -469,7 +469,7 @@ iot_error_t iot_bsp_fs_open_from_stnv(const char* filename, iot_bsp_fs_handle_t*
 iot_error_t iot_bsp_fs_read(iot_bsp_fs_handle_t handle, char* buffer, size_t *length)
 //iot_error_t iot_bsp_fs_read(HashTable* hashTable,char* buffer, const char* filename)
 {
-	return read_file(handle.filename,buffer,&length); 
+	return read_file(handle.filename,buffer,length); 
 }
 
 iot_error_t iot_bsp_fs_write(iot_bsp_fs_handle_t handle, const char* data, unsigned int length)
