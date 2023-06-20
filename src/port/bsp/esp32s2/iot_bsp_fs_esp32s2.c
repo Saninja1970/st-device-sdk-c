@@ -362,6 +362,7 @@ iot_error_t write_file(char* name, char* cont, unsigned int length)
 	if(i<SIZE){
 
 		j = i;
+
 	}
 
 	if(j == -1){
@@ -372,6 +373,8 @@ iot_error_t write_file(char* name, char* cont, unsigned int length)
     strcpy(FILEE[j].content, cont);
     FILEE[j].len = length;
 
+	printf("[Simulator] write_file: file_name = %s , length = %d\n",FILEE[j].file_name,FILEE[j].len);
+
 
     return IOT_ERROR_NONE;
 }
@@ -380,6 +383,7 @@ iot_error_t read_file(char* name, char* buffer, unsigned int* length)
 {
 
 	printf("[Simulator] read_file: name = %s\n",name);
+
     for (int i = 0; i < SIZE; i++) 
     {
         
@@ -387,7 +391,9 @@ iot_error_t read_file(char* name, char* buffer, unsigned int* length)
         if (strcmp(FILEE[i].file_name, name) == 0) 
         {
             memcpy(buffer, FILEE[i].content, FILEE[i].len);
+			buffer[FILEE[i].len] = '\0';
             *length = FILEE[i].len;
+			printf("[Simulator] read_file:file_name = %s ,length = %d\n",FILEE[i].file_name,FILEE[i].len);
             return IOT_ERROR_NONE;
         }
     }
