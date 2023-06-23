@@ -37,10 +37,12 @@
 #define EXAMPLE_ESP_WIFI_PASS      ""
 #define EXAMPLE_ESP_MAXIMUM_RETRY  10
 
-#define DUMMY_TARGET_WIFI_SSID    "AnnapornaSF"
+//#define DUMMY_TARGET_WIFI_SSID    "AnnapornaSF"
+#define DUMMY_TARGET_WIFI_SSID    "GalaxyM30sFAC"
 //#define DUMMY_TARGET_WIFI_SSID    "AmoghPhone"
 
-uint8_t DUMMY_TARGET_WIFI_BSSID[] = {0X4A , 0X1E , 0XBB , 0XEC , 0XA8 , 0XC7 };
+uint8_t DUMMY_TARGET_WIFI_BSSID[] = {0XDA , 0X96 , 0X7D , 0X95 , 0X66 , 0X33 };
+//uint8_t DUMMY_TARGET_WIFI_BSSID[] = {0X4A , 0X1E , 0XBB , 0XEC , 0XA8 , 0XC7 };
 //uint8_t DUMMY_TARGET_WIFI_BSSID[] = {0XE8 , 0X48 , 0XB8 , 0XE0 , 0X8D , 0X90 };
 //uint8_t DUMMY_TARGET_WIFI_BSSID[] = {0X26 , 0XAE , 0X22 , 0XD5 , 0XE3 , 0XEC };
 
@@ -637,8 +639,8 @@ uint16_t iot_bsp_wifi_get_scan_result(iot_wifi_scan_result_t *scan_result)
 			free(ap_list);
 			memcpy(scan_result[ap_num].ssid, DUMMY_TARGET_WIFI_SSID, strlen(DUMMY_TARGET_WIFI_SSID));
 			memcpy(scan_result[ap_num].bssid, DUMMY_TARGET_WIFI_BSSID , IOT_WIFI_MAX_BSSID_LEN);
-			scan_result[ap_num].rssi = -46 ;
-			scan_result[ap_num].freq = 2457 ;
+			scan_result[ap_num].rssi = -18 ;
+			scan_result[ap_num].freq = 2437;
 			scan_result[ap_num].authmode = IOT_WIFI_AUTH_WPA2_PSK ;
 			ap_num = ap_num +1;
 		} 
